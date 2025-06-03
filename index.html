@@ -1,13 +1,130 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Page de Test HTML</title>
+  <meta charset="UTF-8">
+  <title>Interface Serre Connectée</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    header {
+      background-color: #e0e0e0;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .indicators {
+      display: flex;
+      justify-content: space-around;
+      margin: 15px 0;
+    }
+
+    .indicator {
+      padding: 10px;
+      color: white;
+      font-weight: bold;
+      border-radius: 5px;
+      width: 30%;
+      text-align: center;
+    }
+
+    .temp { background-color: green; }
+    .co2 { background-color: orange; }
+    .hum { background-color: red; }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    button, select {
+      padding: 5px 10px;
+    }
+
+    .small-text {
+      font-size: 0.85em;
+      color: red;
+    }
+  </style>
 </head>
 <body>
-    <h1>Bienvenue sur la page de test HTML</h1>
-    <p>Ceci est une page de test pour vérifier le fonctionnement du HTML.</p>
+  <header>
+    <div><strong>Serre Connectée</strong></div>
+    <nav>
+      <a href="#">Accueil</a>
+      <a href="#">Météo</a>
+      <a href="#">Historique</a>
+    </nav>
+  </header>
 
-    <a href="autre.html"></a>
+  <div class="container">
+    <div class="section">
+      <h2>Carte modifiable de la serre</h2>
+      <div style="border: 1px solid black; height: 120px; display: flex; align-items: center; justify-content: center;">
+        (Ici 1)
+      </div>
+    </div>
+
+    <div class="section indicators">
+      <div class="indicator temp">Température</div>
+      <div class="indicator co2">CO₂</div>
+      <div class="indicator hum">Humidité</div>
+    </div>
+
+    <div class="section">
+      <h3>Prévisions (conseils IA)</h3>
+      <textarea rows="4" style="width: 100%;"></textarea>
+    </div>
+
+    <div class="section">
+      <h3>Actions</h3>
+      <div class="actions">
+        <label>Modifier la température :
+          <button>-</button>
+          <span>24°C</span>
+          <button>+</button>
+        </label>
+        <label>Modifier la ventilation :
+          <button>Ouvrir/Fermer</button>
+        </label>
+        <span class="small-text">Autres options</span>
+        <label>Capteur :
+          <select>
+            <option value="">Sélectionner</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
