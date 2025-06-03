@@ -1,175 +1,91 @@
-/* ---------- BASE ---------- */
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #f8f9fa;
-    font-family: 'Arial', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
 }
 
-/* ---------- HEADER ---------- */
-.header {
-    text-align: center;
-    padding: 2rem 0;
+header {
+  background-color: #e0e0e0;
+  padding: 10px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.header h1 {
-    font-weight: 600;
-    color: #212529;
-    margin: 0 0 0.5rem 0;
+nav {
+  display: flex;
+  gap: 20px;
 }
 
-.header h1::after {
-    content: "";
-    display: block;
-    width: 80px;
-    height: 4px;
-    background-color: #d83a4f;
-    margin: 0.8rem auto 0;
-    border-radius: 2px;
+nav a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
 }
 
-.header p {
-    color: #6c757d;
-    margin: 0;
+.container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* ---------- CONTAINER PRINCIPAL ---------- */
-.main-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    flex-grow: 1;
+.section {
+  margin-bottom: 30px;
 }
 
-/* ---------- ENVIRONMENT CYLINDERS ---------- */
-.environment-status {
-    background-color: #212529;
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    text-align: center;
-    margin: 2rem 0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.map-placeholder {
+  border: 1px solid black;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.environment-status h2::after {
-    content: "";
-    display: block;
-    width: 60px;
-    height: 3px;
-    background-color: #d83a4f;
-    margin: 0.5rem auto 0;
-    border-radius: 2px;
+.sensors {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
 }
 
-.env-gauges {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 2rem;
-    gap: 2rem;
-    flex-wrap: wrap;
+.sensor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.env-gauge {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+.sensor-label {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
-.gauge-bar {
-    width: 40px;
-    height: 150px;
-    background-color: #444;
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;
-    align-items: flex-end;
-    border: 1px solid #555;
+/* Cylindre style */
+.cylinder {
+  width: 30px;
+  height: 100px;
+  background: linear-gradient(to top, #ccc 50%, #eee 50%);
+  border-radius: 15px;
+  border: 2px solid #888;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
-.fill {
-    width: 100%;
-    transition: height 0.5s ease;
-    border-radius: 10px 10px 0 0;
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.fill-temp {
-    background: linear-gradient(to top, #f44336, #ffcccb);
+button, select {
+  padding: 5px 10px;
 }
 
-.fill-hum {
-    background: linear-gradient(to top, #2196f3, #bbdefb);
+textarea {
+  width: 100%;
 }
 
-.fill-co2 {
-    background: linear-gradient(to top, #ff9800, #ffe0b2);
-}
-
-.gauge-label {
-    font-weight: bold;
-    margin-top: 0.5rem;
-}
-
-.gauge-status {
-    font-size: 0.9rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
-    background-color: #333;
-    color: white;
-    margin-top: 0.3rem;
-}
-
-/* ---------- FOOTER ---------- */
-footer {
-    background-color: #212529;
-    color: white;
-    padding: 2rem 0;
-    margin-top: auto;
-    border-top: 4px solid #d83a4f;
-}
-
-.footer-content {
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-    padding: 0 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.footer-content p {
-    margin: 0;
-}
-
-.back-link {
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid white;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.back-link:hover {
-    background-color: #d83a4f;
-    color: white;
-    border-color: #d83a4f;
-}
-
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 768px) {
-    .env-gauges {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .footer-content {
-        flex-direction: column;
-        gap: 1rem;
-    }
+.small-text {
+  font-size: 0.85em;
+  color: red;
 }
