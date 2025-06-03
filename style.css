@@ -1,35 +1,99 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
+  background-color: #f2f7f1;
+  color: #2e3b2c;
 }
 
 header {
-  background-color: #e0e0e0;
-  padding: 10px 40px;
+  background-color: #8ab66b;
+  background-image: url('../ProjetIntegratif/ressources/feuillage.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff;
+  padding: 15px 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-height: 100px;
 }
+
+/* Fallback si WebP non supporté */
+@supports not (background-image: url('../ProjetIntegratif/ressources/feuillage.webp')) {
+  header {
+    background-image: url('../ProjetIntegratif/ressources/feuillage.jpg');
+  }
+}
+
+header strong {
+  font-size: 2.2em;
+  font-weight: 800;
+  font-family: 'Courier New', Courier, monospace; /* rustique et simple */
+  color: #c9c502; /* vert olive plus naturel */
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+header strong::before {
+  content: "🌾"; /* gerbe de blé pour l’agriculture */
+  font-size: 1.9em;
+  transform: translateY(1px);
+}
+
 
 nav {
   display: flex;
   gap: 20px;
 }
 
+
+nav a:hover {
+  background-color: #d9f7c9;
+  color: #2e3b2c;
+  transform: scale(1.05);
+}
+
 nav a {
   text-decoration: none;
-  color: black;
+  color: #2e3b2c;
   font-weight: bold;
+  padding: 8px 14px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-sizing: border-box; /* important */
+  font-size: 1em;
+}
+
+nav a.active {
+  background-color: #b0b0b0;  /* gris doux */
+  color: #2e3b2c;
+  cursor: default;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+  transform: none;
+  pointer-events: none;
+  border: 1px solid #8a8a8a;
+  padding: 8px 14px; /* important de répéter */
+  font-size: 1em;    /* assure la même taille */
+  box-sizing: border-box;
 }
 
 .container {
   padding: 30px;
   max-width: 1200px;
   margin: auto;
-  background: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
 }
 
 .section {
@@ -44,13 +108,14 @@ nav a {
 
 .indicator {
   flex: 1;
-  padding: 15px;
-  border-radius: 8px;
+  padding: 20px;
+  border-radius: 10px;
   font-weight: bold;
   text-align: center;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
+/* Capteurs : on garde les couleurs spécifiques */
 .indicator.temp {
   background-color: #ffcccb;
   color: #a80000;
@@ -66,45 +131,83 @@ nav a {
   color: #084298;
 }
 
+/* Carte */
 .map-placeholder {
-  border: 2px solid #333;
-  background-color: #fafafa;
+  border: 2px dashed #b5c99a;
+  background-color: #f9fff5;
   height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-style: italic;
-  color: #666;
-  border-radius: 6px;
+  color: #8a9a78;
+  border-radius: 10px;
+}
+
+/* Actions */
+.actions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
 }
 
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 18px;
+  padding: 15px;
+  border: 1px solid #dfe8d5;
+  border-radius: 10px;
+  background-color: #f4fbee;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.03);
 }
 
-.actions label {
+.action-group {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
-.actions label button {
-  min-width: 30px;
-  cursor: pointer;
-  padding: 5px 10px;
+.action-label {
+  min-width: 180px;
+  font-weight: bold;
+  color: #446033;
 }
 
 button, select {
-  padding: 5px 10px;
+  padding: 7px 12px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid #cbd8c0;
+  background-color: #f0f7eb;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover, select:hover {
+  background-color: #dff2d8;
+  transform: scale(1.02);
+}
+
+button:active {
+  transform: scale(0.98);
 }
 
 textarea {
   width: 100%;
+  padding: 12px;
+  resize: vertical;
+  font-size: 1em;
+  border-radius: 8px;
+  border: 1px solid #cbd8c0;
+  background-color: #f8fff5;
+  color: #2e3b2c;
 }
 
 .small-text {
   font-size: 0.85em;
-  color: red;
+  color: #9b5229;
 }

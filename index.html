@@ -4,24 +4,20 @@
   <meta charset="UTF-8">
   <title>Interface Serre Connectée</title>
   <link rel="stylesheet" href="style.css">
+
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
   <header>
     <div><strong>Serre Connectée</strong></div>
     <nav>
-      <a href="#">Accueil</a>
-      <a href="#">Météo</a>
-      <a href="#">Historique</a>
+      <a href="index.html" class="active">Accueil</a>
+      <a href="pages/meteo.html">Météo</a>
+      <a href="pages/historique.html">Historique</a>
     </nav>
   </header>
 
-  <h1>Données Capteur LoRa</h1>
-  <p>🌡 Température : <span id="temperature">...</span> °C</p>
-  <p>💧 Humidité : <span id="humidity">...</span> %</p>
-
   <div class="container">
-
     <div class="section indicators">
       <div class="indicator temp">Température</div>
       <div class="indicator co2">CO₂</div>
@@ -30,9 +26,7 @@
 
     <div class="section">
       <h2>Carte modifiable de la serre</h2>
-      <div class="map-placeholder">
-        (Ici 1)
-      </div>
+      <div class="map-placeholder">(Ici 1)</div>
     </div>
 
     <div class="section">
@@ -40,50 +34,42 @@
       <textarea rows="4"></textarea>
     </div>
 
+    <!-- CHAMP ACTION -->
     <div class="section">
-      <h3>Actions</h3>
-      <div class="actions">
-        <label>Modifier la température :
-          <button>-</button>
-          <span>24°C</span>
-          <button>+</button>
-        </label>
-        <label>Modifier la ventilation :
-          <button>Ouvrir/Fermer</button>
-        </label>
-        <span class="small-text">Autres options</span>
-        <label>Capteur :
-          <select>
+      <div class="actions-header">
+        <h3>Actions</h3>
+        <div>
+          <label for="sensor-select" class="action-label">Capteur :</label>
+          <select id="sensor-select">
             <option value="">Sélectionner</option>
           </select>
-        </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <!-- TEMPÉRATURE -->
+        <div class="action-group">
+          <label for="temperature_action" class="action-label">Modifier la température :</label>
+          <button id="decrease" aria-label="Diminuer température">−</button>
+          <span id="temperature_action" class="action-value">24°C</span>
+          <button id="increase" aria-label="Augmenter température">+</button>
+        </div>
+
+        <!-- VENTILATION -->
+        <div class="action-group">
+          <label for="ventilation-toggle" class="action-label">Modifier la ventilation :</label>
+          <button id="ventilation-toggle">Ouvrir/Fermer</button>
+        </div>
+
+        <!-- AUTRES OPTIONS -->
+        <div class="other-options">
+          <span class="small-text">Autres options</span>
+        </div>
       </div>
     </div>
-
   </div>
 
-  <script>
-  const options = {
-    username: 'mqtt-access@ttn',
-    password: 'NNSXS.LJDO5CK3GZ6ORBP6RQ3DDQBIDUXOA73RSEUEB5Y.7N6NA427MLRFJEGKV62WMNTLB3R6L6BDNUBHDQVDEX6PMGXTKXHQ',
-    protocol: 'wss'
-  };
-
-  const client = mqtt.connect('wss://eu1.cloud.thethings.network/mqtt', options);
-
-  client.on('connect', () => {
-    console.log("Connecté à TTN MQTT");
-    client.subscribe('v3/tonAppID@ttn/devices/+/up');
-  });
-
-  client.on('message', (topic, message) => {
-    const json = JSON.parse(message.toString());
-    const payload = json.uplink_message.decoded_payload;
-
-    document.getElementById('temperature').textContent = payload.temperature;
-    document.getElementById('humidity').textContent = payload.humidity;
-  });
-  </script>
-
+  <script src="scripts/connexionMQTT.js" defer></script>
+  <script src="scripts/cacheLocal.js" defer></script>
 </body>
 </html>
