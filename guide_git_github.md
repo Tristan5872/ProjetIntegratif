@@ -105,6 +105,11 @@ git pull origin main
 
 ---
 
+## 10. copier des fichiers sur sa branche
+```bash
+git checkout branche-contenant-fichier-aCopier -- nom-du-fichier
+```
+
 ## 📝 Résumé visuel du workflow
 
 ```
