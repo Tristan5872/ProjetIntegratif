@@ -36,45 +36,64 @@ nav a {
   margin-bottom: 30px;
 }
 
+.indicators {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.indicator {
+  flex: 1;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.indicator.temp {
+  background-color: #ffcccb;
+  color: #a80000;
+}
+
+.indicator.co2 {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.indicator.hum {
+  background-color: #cfe2ff;
+  color: #084298;
+}
+
 .map-placeholder {
-  border: 1px solid black;
-  height: 120px;
+  border: 2px solid #333;
+  background-color: #fafafa;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.sensors {
-  display: flex;
-  justify-content: space-around;
-  text-align: center;
-}
-
-.sensor {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.sensor-label {
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-/* Cylindre style */
-.cylinder {
-  width: 30px;
-  height: 100px;
-  background: linear-gradient(to top, #ccc 50%, #eee 50%);
-  border-radius: 15px;
-  border: 2px solid #888;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+  font-style: italic;
+  color: #666;
+  border-radius: 6px;
 }
 
 .actions {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.actions label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.actions label button {
+  min-width: 30px;
+  cursor: pointer;
+  padding: 5px 10px;
 }
 
 button, select {
