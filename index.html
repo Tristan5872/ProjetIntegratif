@@ -19,7 +19,7 @@
   <h1>Données Capteur LoRa</h1>
   <p>🌡 Température : <span id="temperature">...</span> °C</p>
   <p>💧 Humidité : <span id="humidity">...</span> %</p>
-  
+
   <div class="container">
     <div class="section">
       <h2>Carte modifiable de la serre</h2>
@@ -67,7 +67,7 @@
     protocol: 'wss'
   };
 
-  const client = mqtt.connect('wss://eu1.cloud.thethings.network:8883', options);
+  const client = mqtt.connect('wss://eu1.cloud.thethings.network/mqtt', options);
 
   client.on('connect', () => {
     console.log("Connecté à TTN MQTT");
