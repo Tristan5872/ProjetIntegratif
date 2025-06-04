@@ -1,5 +1,5 @@
 const options = {
-    username: 'rrt-ttn-app@ttn',
+    username: 'rt-ttn-app@ttn',
     password: 'NNSXS.TOR3G445SGXWD56HWGCKVUTFVXZMREAHKCVIFNA.FOSLC4TQYFZA6J6YBAOSDGJXXN543OGRF7Z5GVYUHDGOSZUMUBAQ',
     protocol: 'wss'
 };
@@ -8,7 +8,7 @@ const client = mqtt.connect('wss://eu1.cloud.thethings.network/mqtt', options);
 
 client.on('connect', () => {
     console.log("Connecté à TTN MQTT");
-    client.subscribe('v3/tonAppID@ttn/devices/+/up');
+    client.subscribe('v3/rt-ttn-app@ttn/devices/+/up');
 });
 
 client.on('message', (topic, message) => {
