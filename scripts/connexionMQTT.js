@@ -1,10 +1,11 @@
+const mqtt=require('mqtt')
 const options = {
+    clientID: 'groupe3projetint',
     username: 'rt-ttn-app@ttn',
     password: 'NNSXS.TOR3G445SGXWD56HWGCKVUTFVXZMREAHKCVIFNA.FOSLC4TQYFZA6J6YBAOSDGJXXN543OGRF7Z5GVYUHDGOSZUMUBAQ',
-    protocol: 'wss'
 };
 
-const client = mqtt.connect('wss://eu1.cloud.thethings.network:443/mqtt', options);
+const client = mqtt.connect('mqtts://eu1.cloud.thethings.network:8883', options);
 
 client.on('connect', () => {
     console.log("Connecté à TTN MQTT");
