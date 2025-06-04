@@ -4,7 +4,7 @@ const options = {
     protocol: 'wss'
 };
 
-const client = mqtt.connect('wss://eu1.cloud.thethings.network/mqtt', options);
+const client = mqtt.connect('wss://eu1.cloud.thethings.network:443/mqtt', options);
 
 client.on('connect', () => {
     console.log("Connecté à TTN MQTT");
