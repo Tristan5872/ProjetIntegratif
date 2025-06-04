@@ -34,11 +34,30 @@
     <div class="section meteo indicators">
         <div class="matin indicator">Matin</div>
         <div class="apres midi indicator">Après-midi</div>
+        <p id="weather"></p>
     </div>
 
     <div>
         <div class="graphique"></div>
     </div>
+
+    <script>
+        const apiKey = "9dfc4dffd747d7c4e7aa04385576c3a7"; // clé api obtenue
+        const city = "Limoges";
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=fr&appid=${apiKey}`;
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const temp = data.main.temp;
+            const desc = data.weather[0].description;
+            document.getElementById("weather").textContent =
+            `Il fait ${temp}°C à ${city} avec ${desc}.`;
+        })
+        .catch(error => {
+            document.getElementById("weather").textContent = "Erreur : " + error.message;
+        });
+    </script>
 
     <script src="../scripts/cacheLocal.js"></script>
 </body>
