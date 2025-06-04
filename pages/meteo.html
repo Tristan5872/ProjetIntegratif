@@ -44,18 +44,24 @@
     <script>
         const apiKey = "9dfc4dffd747d7c4e7aa04385576c3a7"; // clé api obtenue
         const city = "Limoges";
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=fr&appid=${apiKey}`;
 
-        fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            //const temp = data.main.temp;
-            //const desc = data.weather[0].description;
-            document.getElementById("weather").textContent = JSON.stringify(data, null, 2); // Affiche les données JSON brutes pour le débogage
-        })
-        .catch(error => {
-            document.getElementById("weather").textContent = "Erreur : " + error.message;
-        });
+        function getMeteo(){
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=fr&appid=${apiKey}`;
+
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                //const temp = data.main.temp;
+                //const desc = data.weather[0].description;
+                document.getElementById("weather").textContent = JSON.stringify(data, null, 2); // Affiche les données JSON brutes pour le débogage
+                console.log("Météo mise à jour à", new Date().toLocaleTimeString());
+            })
+            .catch(error => {
+                document.getElementById("weather").textContent = "Erreur : " + error.message;
+            });
+        }
+        getMeteo(); //appel initial pour obtenir immédiatement la météo
+        setInterval(getMeteo, 3600000); //Met à jour les heures
     </script>
 
     <script src="../scripts/cacheLocal.js"></script>
