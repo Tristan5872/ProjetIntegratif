@@ -49,10 +49,9 @@
         fetch(url)
         .then(response => response.json())
         .then(data => {
-            const temp = data.main.temp;
-            const desc = data.weather[0].description;
-            document.getElementById("weather").textContent =
-            `Il fait ${temp}°C à ${city} avec ${desc}.`;
+            //const temp = data.main.temp;
+            //const desc = data.weather[0].description;
+            document.getElementById("weather").textContent = data;
         })
         .catch(error => {
             document.getElementById("weather").textContent = "Erreur : " + error.message;
