@@ -56,7 +56,7 @@
     const apiKey = "f73e9c1ed2c8007ded08388c1007780e";
 
     const villes = [
-      { nom: "Ma parcelle", lat: 45.6368313960361, lon: 1.00846847343737, offset: [25, 40] },
+      { nom: "Ma serre connectée", lat: 45.6368313960361, lon: 1.00846847343737, offset: [25, 40] },
       { nom: "Limoges", lat: 45.8336, lon: 1.2476, offset: [25, 40] },
       { nom: "Brive", lat: 45.1591, lon: 1.533, offset: [25, 40] },
       { nom: "Périgueux", lat: 45.184, lon: 0.7211, offset: [25, 40] },
@@ -113,7 +113,7 @@
 
             const popupContent = `
               <strong>${ville.nom}</strong><br>
-              ${weather.description}<br>
+              <img src='https://openweathermap.org/img/wn/${weather.icon}@2x.png' style="height: 1.4em; vertical-align: middle;"> ${weather.description}<br>
               🌡️ Température : ${weather.temp}°C<br>
               💧 Humidité : ${weather.humidity}%
             `;

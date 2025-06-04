@@ -1,69 +1,152 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Météo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../ressources/logo-serre.png" type="image/png">
-    <link rel="stylesheet" href="../style.css">
+  <meta charset="UTF-8" />
+  <title>Météo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="../ressources/logo-serre.png" type="image/png" />
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    /* Styles pour l’intégration Leaflet dans matin et après-midi */
+    .matin.indicator,
+    .apres.indicator {
+      padding: 10px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+    .map-title {
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .carte-meteo {
+      width: 100%;
+      height: 300px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div><strong>Serre Connectée</strong></div>
-        <nav>
-            <a href="../index.html" >Accueil</a>
-            <a href="meteo.html" class="active">Météo</a>
-            <a href="historique.html" >Historique</a>
-        </nav>
-    </header>
+  <header>
+    <div><strong>Serre Connectée</strong></div>
+    <nav>
+      <a href="../index.html">Accueil</a>
+      <a href="meteo.html" class="active">Météo</a>
+      <a href="historique.html">Historique</a>
+    </nav>
+  </header>
 
-    <h1>Bienvenue sur la page météo</h1>
-    
-    <div class="container">
-        <div class="section semaine indicators">
-            <div class="lundi indicator">Lundi</div>
-            <div class="mardi indicator">Mardi</div>
-            <div class="mercredi indicator">Mercredi</div>
-            <div class="jeudi indicator">Jeudi</div>
-            <div class="vendredi indicator">Vendredi</div>
-            <div class="samedi indicator">Samedi</div>
-            <div class="dimanche indicator">Dimanche</div>
-        </div>
+  <h1>Bienvenue sur la page météo</h1>
+
+  <div class="container">
+    <div class="section semaine indicators">
+      <div class="lundi indicator">Lundi</div>
+      <div class="mardi indicator">Mardi</div>
+      <div class="mercredi indicator">Mercredi</div>
+      <div class="jeudi indicator">Jeudi</div>
+      <div class="vendredi indicator">Vendredi</div>
+      <div class="samedi indicator">Samedi</div>
+      <div class="dimanche indicator">Dimanche</div>
+    </div>
+  </div>
+
+  <div class="section meteo indicators">
+    <div class="matin indicator">
+      <div class="map-title">Actuellement</div>
+      <div id="map-now" class="carte-meteo"></div>
     </div>
 
-    <div class="section meteo indicators">
-        <div class="matin indicator">Matin</div>
-        <div class="apres midi indicator">Après-midi</div>
-        <p id="weather"></p>
+    <div class="apres midi indicator">
+      <div class="map-title">Prévisions 15h</div>
+      <div id="map-forecast" class="carte-meteo"></div>
     </div>
 
-    <div>
-        <div class="graphique"></div>
-    </div>
+    <p id="weather"></p>
+  </div>
 
-    <script>
-        const apiKey = "9dfc4dffd747d7c4e7aa04385576c3a7"; // clé api obtenue
-        const city = "Limoges";
+  <div>
+    <div class="graphique"></div>
+  </div>
 
-        function getMeteo(){
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=fr&appid=${apiKey}`;
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const apiKey = "f73e9c1ed2c8007ded08388c1007780e";
 
-            fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                //const temp = data.main.temp;
-                //const desc = data.weather[0].description;
-                document.getElementById("weather").textContent = JSON.stringify(data, null, 2); // Affiche les données JSON brutes pour le débogage
-                console.log("Météo mise à jour à", new Date().toLocaleTimeString());
-            })
-            .catch(error => {
-                document.getElementById("weather").textContent = "Erreur : " + error.message;
+    const villes = [
+      { nom: "Ma serre connectée", lat: 45.6368, lon: 1.0084, offset: [25, 40] },
+      { nom: "Limoges", lat: 45.8336, lon: 1.2476, offset: [25, 40] },
+      { nom: "Brive", lat: 45.1591, lon: 1.533, offset: [25, 40] },
+      { nom: "Périgueux", lat: 45.184, lon: 0.7211, offset: [25, 40] },
+    ];
+
+    function afficherMeteo(villes, mapId, mode = "current") {
+      const map = L.map(mapId).setView([45.7, 1.2], 9);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
+
+      villes.forEach(ville => {
+        const url = mode === "current"
+          ? `https://api.openweathermap.org/data/2.5/weather?lat=${ville.lat}&lon=${ville.lon}&units=metric&lang=fr&appid=${apiKey}`
+          : `https://api.openweathermap.org/data/2.5/forecast?lat=${ville.lat}&lon=${ville.lon}&units=metric&lang=fr&appid=${apiKey}`;
+
+        fetch(url)
+          .then(res => res.json())
+          .then(data => {
+            let weather;
+            if (mode === "current") {
+              weather = {
+                icon: data.weather[0].icon,
+                description: data.weather[0].description,
+                temp: Math.round(data.main.temp),
+                humidity: data.main.humidity
+              };
+            } else {
+              const now = new Date();
+              const targetHour = 15;
+              const target = data.list.find(item => {
+                const itemDate = new Date(item.dt_txt);
+                return itemDate.getHours() === targetHour && itemDate.getDate() === now.getDate();
+              }) || data.list[0];
+
+              weather = {
+                icon: target.weather[0].icon,
+                description: target.weather[0].description,
+                temp: Math.round(target.main.temp),
+                humidity: target.main.humidity
+              };
+            }
+
+            const iconUrl = `https://openweathermap.org/img/wn/${weather.icon}@2x.png`;
+
+            const weatherIcon = L.icon({
+              iconUrl: iconUrl,
+              iconSize: [50, 50],
+              iconAnchor: ville.offset,
+              popupAnchor: [0, -20]
             });
-        }
-        getMeteo(); //appel initial pour obtenir immédiatement la météo
-        setInterval(getMeteo, 3600000); //Met à jour les heures
-    </script>
 
-    <script src="../scripts/cacheLocal.js"></script>
+            const popupContent = `
+              <strong>${ville.nom}</strong><br>
+              <img src='${iconUrl}' style="height: 1.4em; vertical-align: middle;"> ${weather.description}<br>
+              🌡️ Température : ${weather.temp}°C<br>
+              💧 Humidité : ${weather.humidity}%
+            `;
+
+            const marker = L.marker([ville.lat, ville.lon], { icon: weatherIcon }).addTo(map);
+            marker.bindPopup(popupContent);
+          });
+      });
+    }
+
+    afficherMeteo(villes, "map-now", "current");
+    afficherMeteo(villes, "map-forecast", "forecast");
+  </script>
+
+  <script src="../scripts/cacheLocal.js"></script>
 </body>
 </html>
