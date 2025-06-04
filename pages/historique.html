@@ -21,16 +21,24 @@
     <h1>Bienvenue sur la page historique</h1>
 
     <div class="container">
-        <div class="section semaine indicators">
-            <div class="lundi indicator">Lundi</div>
-            <div class="mardi indicator">Mardi</div>
-            <div class="mercredi indicator">Mercredi</div>
-            <div class="jeudi indicator">Jeudi</div>
-            <div class="vendredi indicator">Vendredi</div>
-            <div class="samedi indicator">Samedi</div>
-            <div class="dimanche indicator">Dimanche</div>
+        <div class="section temps indicators">
+            <div class="ajd indicator">Aujourd'hui</div>
+            <div class="semaine indicator">1 semaine</div>
+            <div class="mois indicator">1 mois</div>
+            <div class="six mois indicator">6 mois</div>
+            <div class="an indicator">1 an</div>
         </div>
     </div>
+
+    <div>
+        <label for="sensor-select" class="action-label">Filtres :</label>
+        <select id="sensor-select">
+            <option value="">Sélectionner</option>
+        </select>
+    </div>
+
+    <div class="graphique"></div>
+
     <script src="../scripts/"></script>
 </body>
 </html>
