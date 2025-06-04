@@ -51,7 +51,7 @@
         .then(data => {
             //const temp = data.main.temp;
             //const desc = data.weather[0].description;
-            document.getElementById("weather").textContent = data;
+            document.getElementById("weather").textContent = response;
         })
         .catch(error => {
             document.getElementById("weather").textContent = "Erreur : " + error.message;
