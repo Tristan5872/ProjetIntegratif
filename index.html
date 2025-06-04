@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="ressources/logo-serre.png" type="image/png">
 
-
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <script src="C:\Users\enzod\OneDrive\Documents\IUT\GitProject\ProjetIntegratif\scripts\connexionMQTT.js"></script>
 </head>
@@ -45,6 +44,8 @@
           <label for="sensor-select" class="action-label">Capteur :</label>
           <select id="sensor-select">
             <option value="">Sélectionner</option>
+            <option value="interieur">Capteur Intérieur</option>
+            <option value="exterieur">Capteur Extérieur</option>
           </select>
         </div>
       </div>
@@ -74,5 +75,24 @@
 
   <script src="scripts/connexionMQTT.js" defer></script>
   <script src="scripts/cacheLocal.js" defer></script>
+
+  <!-- Script pour gérer l'incrémentation de température -->
+  <script>
+    const tempDisplay = document.getElementById("temperature_action");
+    const increaseBtn = document.getElementById("increase");
+    const decreaseBtn = document.getElementById("decrease");
+
+    let temperature = parseInt(tempDisplay.textContent);
+
+    increaseBtn.addEventListener("click", () => {
+      temperature += 1;
+      tempDisplay.textContent = `${temperature}°C`;
+    });
+
+    decreaseBtn.addEventListener("click", () => {
+      temperature -= 1;
+      tempDisplay.textContent = `${temperature}°C`;
+    });
+  </script>
 </body>
 </html>
