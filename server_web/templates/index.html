@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tableau de Bord</title>
+
+  <!-- Lien vers la feuille de style -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', filename='ressources/logo-serre.png') }}" type="image/png">
+
+  <!-- Client MQTT via CDN -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <!-- En-tête avec navigation -->
+  <header>
+    <div><strong>Serre Connectée</strong></div>
+    <nav>
+      <a href="{{ url_for('home') }}" class="active">Accueil</a>
+      <a href="{{ url_for('meteo') }}">Météo</a>
+      <a href="{{ url_for('historique') }}">Historique</a>
+    </nav>
+  </header>
+
+  <!-- Carte (ex : plan de la serre) -->
+  <div class="section">
+    <h2>Carte modifiable de la serre</h2>
+    <div class="map-placeholder">(Ici 1)</div>
+  </div>
+
+  <!-- Indicateurs capteurs -->
+  <div class="container">
+    <!-- Données capteur intérieur -->
+    <div class="section indicators">
+      <h3>Intérieur</h3>
+      <div class="indicator temp">Température <p id="temperature-int"></p></div>
+      <div class="indicator co2">CO₂ <p id="co2-int"></p></div>
+      <div class="indicator hum">Humidité <p id="humidity-int"></p></div>
+    </div>
+
+    <!-- Données capteur extérieur -->
+    <div class="section indicators">
+      <h3>Extérieur</h3>
+      <div class="indicator temp">Température <p id="temperature-ext"></p></div>
+      <div class="indicator hum">Humidité <p id="humidity-ext"></p></div>
+    </div>
+  </div>
+
+  <!-- Prévisions météo / IA -->
+  <div class="section">
+    <h3>Prévisions (conseils IA)</h3>
+    <textarea rows="4"></textarea>
+  </div>
+
+  <!-- Section des actions (commandes manuelles) -->
+  <div class="section">
+    <div class="actions-header">
+      <h3>Actions</h3>
+
+      <!-- Choix du capteur ciblé -->
+      <div>
+        <label for="sensor-select" class="action-label">Capteur :</label>
+        <select id="sensor-select">
+          <option value="">Sélectionner</option>
+          <option value="interieur">Capteur Intérieur</option>
+          <option value="exterieur">Capteur Extérieur</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <!-- Action température -->
+      <div class="action-group">
+        <label for="temperature_action" class="action-label">Modifier la température :</label>
+        <button id="decrease" aria-label="Diminuer température">−</button>
+        <span id="temperature_action" class="action-value">24°C</span>
+        <button id="increase" aria-label="Augmenter température">+</button>
+      </div>
+
+      <!-- Action ventilation -->
+      <div class="action-group">
+        <label class="action-label">Modifier la ventilation :</label>
+        <button id="btn-ouvrir" class="vent-btn">Ouvrir</button>
+        <button id="btn-fermer" class="vent-btn">Fermer</button>
+      </div>
+
+      <!-- Arrosage -->
+      <div class="action-group">
+        <label class="action-label" for="arrosage_duree">Commande d’arrosage :</label>
+        <input type="number" id="arrosage_duree" placeholder="Durée (min)" min="1" max="60">
+        <button id="btn-arroser">Lancer</button>
+      </div>
+
+      <!-- Éclairage -->
+      <div class="action-group">
+        <label class="action-label" for="eclairage_duree">Commande d’éclairage :</label>
+        <input type="number" id="eclairage_duree" placeholder="Durée (min)" min="1" max="60">
+        <button id="btn-eclairer">Allumer</button>
+      </div>
+
+      <!-- Zone future pour options avancées -->
+      <div class="other-options">
+        <span class="small-text">Autres options</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script d'interaction locale (température, boutons, etc.) -->
+  <script>
+    // === Température ===
+    const tempDisplay = document.getElementById("temperature_action");
+    const increaseBtn = document.getElementById("increase");
+    const decreaseBtn = document.getElementById("decrease");
+    let temperature = parseInt(tempDisplay.textContent);
+
+    increaseBtn.addEventListener("click", () => {
+      temperature += 1;
+      tempDisplay.textContent = `${temperature}°C`;
+    });
+
+    decreaseBtn.addEventListener("click", () => {
+      temperature -= 1;
+      tempDisplay.textContent = `${temperature}°C`;
+    });
+
+    // === Ventilation ===
+    const btnOuvrir = document.getElementById("btn-ouvrir");
+    const btnFermer = document.getElementById("btn-fermer");
+
+    btnOuvrir.addEventListener("click", () => {
+      // Gestion des classes CSS pour illustrer l'état
+      btnOuvrir.classList.add("ouvert");
+      btnFermer.classList.remove("ferme", "ouvert");
+      btnOuvrir.classList.remove("ferme");
+    });
+
+    btnFermer.addEventListener("click", () => {
+      btnFermer.classList.add("ferme");
+      btnOuvrir.classList.remove("ouvert", "ferme");
+      btnFermer.classList.remove("ouvert");
+    });
+
+    // === Arrosage ===
+    const arroserBtn = document.getElementById("btn-arroser");
+    const arrosageInput = document.getElementById("arrosage_duree");
+
+    arroserBtn.addEventListener("click", () => {
+      const minutes = parseInt(arrosageInput.value);
+      if (!isNaN(minutes) && minutes > 0) {
+        console.log(`Arrosage lancé pour ${minutes} minutes`);
+        // 👉 Ajouter ici un publish MQTT si besoin
+      } else {
+        alert("Merci d’entrer une durée valide pour l’arrosage.");
+      }
+    });
+
+    // === Éclairage ===
+    const eclairerBtn = document.getElementById("btn-eclairer");
+    const eclairageInput = document.getElementById("eclairage_duree");
+
+    eclairerBtn.addEventListener("click", () => {
+      const minutes = parseInt(eclairageInput.value);
+      if (!isNaN(minutes) && minutes > 0) {
+        console.log(`Éclairage lancé pour ${minutes} minutes`);
+        // 👉 Ajouter ici un publish MQTT si besoin
+      } else {
+        alert("Merci d’entrer une durée valide pour l’éclairage.");
+      }
+    });
+  </script>
+
+  <!-- Scripts externes (fonctionnalité MQTT, envoi/lecture données, etc.) -->
+  <script src="{{ url_for('static', filename='js/envoyerDonnees.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/connexionMQTT.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/recupererDonnees.js') }}" defer></script>
+</body>
+</html>
