@@ -6,9 +6,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="ressources/logo-serre.png" type="image/png">
 
-
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script src="C:\Users\enzod\OneDrive\Documents\IUT\GitProject\ProjetIntegratif\scripts\connexionMQTT.js"></script>
 </head>
 <body>
   <header>
@@ -20,16 +18,16 @@
     </nav>
   </header>
 
-  <div class="container">
+    <div class="section">
+      <h2>Carte modifiable de la serre</h2>
+      <div class="map-placeholder">(Ici 1)</div>
+    </div>
+
+    <div class="container">
     <div class="section indicators">
       <div class="indicator temp">Température <p id="temperature"></p></div>
       <div class="indicator co2">CO₂</div>
       <div class="indicator hum">Humidité <p id="humidity"></p></div>
-    </div>
-
-    <div class="section">
-      <h2>Carte modifiable de la serre</h2>
-      <div class="map-placeholder">(Ici 1)</div>
     </div>
 
     <div class="section">
@@ -45,6 +43,8 @@
           <label for="sensor-select" class="action-label">Capteur :</label>
           <select id="sensor-select">
             <option value="">Sélectionner</option>
+            <option value="interieur">Capteur Intérieur</option>
+            <option value="exterieur">Capteur Extérieur</option>
           </select>
         </div>
       </div>
@@ -60,9 +60,25 @@
 
         <!-- VENTILATION -->
         <div class="action-group">
-          <label for="ventilation-toggle" class="action-label">Modifier la ventilation :</label>
-          <button id="ventilation-toggle">Ouvrir/Fermer</button>
+          <label class="action-label">Modifier la ventilation :</label>
+          <button id="btn-ouvrir" class="vent-btn">Ouvrir</button>
+          <button id="btn-fermer" class="vent-btn">Fermer</button>
         </div>
+
+        <!-- ARROSAGE -->
+        <div class="action-group">
+          <label class="action-label" for="arrosage_duree">Commande d’arrosage :</label>
+          <input type="number" id="arrosage_duree" placeholder="Durée (min)" min="1" max="60">
+          <button id="btn-arroser">Lancer</button>
+        </div>
+
+        <!-- ÉCLAIRAGE -->
+        <div class="action-group">
+          <label class="action-label" for="eclairage_duree">Commande d’éclairage :</label>
+          <input type="number" id="eclairage_duree" placeholder="Durée (min)" min="1" max="60">
+          <button id="btn-eclairer">Allumer</button>
+        </div>
+
 
         <!-- AUTRES OPTIONS -->
         <div class="other-options">
@@ -72,7 +88,65 @@
     </div>
   </div>
 
-  <script src="scripts/connexionMQTT.js" defer></script>
-  <script src="scripts/cacheLocal.js" defer></script>
+  <script>
+    const tempDisplay = document.getElementById("temperature_action");
+    const increaseBtn = document.getElementById("increase");
+    const decreaseBtn = document.getElementById("decrease");
+
+    let temperature = parseInt(tempDisplay.textContent);
+
+    increaseBtn.addEventListener("click", () => {
+      temperature += 1;
+      tempDisplay.textContent = `${temperature}°C`;
+    });
+
+    decreaseBtn.addEventListener("click", () => {
+      temperature -= 1;
+      tempDisplay.textContent = `${temperature}°C`;
+    });
+
+    const btnOuvrir = document.getElementById("btn-ouvrir");
+    const btnFermer = document.getElementById("btn-fermer");
+
+    btnOuvrir.addEventListener("click", () => {
+      btnOuvrir.classList.add("ouvert");
+      btnFermer.classList.remove("ferme");
+      btnOuvrir.classList.remove("ferme");
+      btnFermer.classList.remove("ouvert");
+    });
+
+    btnFermer.addEventListener("click", () => {
+      btnFermer.classList.add("ferme");
+      btnOuvrir.classList.remove("ouvert");
+      btnFermer.classList.remove("ouvert");
+      btnOuvrir.classList.remove("ferme");
+    });
+
+        const arroserBtn = document.getElementById("btn-arroser");
+    const arrosageInput = document.getElementById("arrosage_duree");
+    const eclairerBtn = document.getElementById("btn-eclairer");
+    const eclairageInput = document.getElementById("eclairage_duree");
+
+    arroserBtn.addEventListener("click", () => {
+      const minutes = parseInt(arrosageInput.value);
+      if (!isNaN(minutes) && minutes > 0) {
+        console.log(`Arrosage lancé pour ${minutes} minutes`);
+        // ici tu peux ajouter publish MQTT ou autre
+      } else {
+        alert("Merci d’entrer une durée valide pour l’arrosage.");
+      }
+    });
+
+    eclairerBtn.addEventListener("click", () => {
+      const minutes = parseInt(eclairageInput.value);
+      if (!isNaN(minutes) && minutes > 0) {
+        console.log(`Éclairage lancé pour ${minutes} minutes`);
+        // idem ici pour MQTT
+      } else {
+        alert("Merci d’entrer une durée valide pour l’éclairage.");
+      }
+    });
+    
+  </script>
 </body>
 </html>

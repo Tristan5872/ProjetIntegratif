@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Favicon du site -->
+    <link rel="icon" href="{{ url_for('static', filename='ressources/logo-serre.png') }}" type="image/png">
+
+    <!-- Feuille de style principale -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <!-- En-tête du tableau de bord avec navigation -->
+    <header>
+        <div><strong>Serre Connectée</strong></div>
+        <nav>
+            <!-- Lien vers les différentes pages -->
+            <a href="{{ url_for('home') }}">Accueil</a>
+            <a href="{{ url_for('meteo') }}">Météo</a>
+            <a href="{{ url_for('historique') }}" class="active">Historique</a>
+        </nav>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="container">
+        <h1>Historique des mesures et actions</h1>
+
+        <!-- Choix de la période pour afficher les données -->
+        <div class="section temps indicators">
+            <div class="ajd indicator">Aujourd'hui</div>
+            <div class="semaine indicator">1 semaine</div>
+            <div class="mois indicator">1 mois</div>
+            <div class="sixmois indicator">6 mois</div> <!-- 🛠️ libellé corrigé -->
+            <div class="an indicator">1 an</div>
+        </div>
+
+        <!-- Filtre capteur pour afficher des données dans le graphique -->
+        <div class="section">
+            <label for="graph-sensor-select" class="action-label">Filtre capteur :</label>
+            <select id="graph-sensor-select">
+                <option value="">Sélectionner un capteur</option>
+                <!-- Options dynamiquement injectées via JS -->
+            </select>
+        </div>
+
+        <!-- Zone qui contiendra le graphique (insertion dynamique en JS) -->
+        <div class="graphique"></div>
+
+        <!-- Titre pour l'historique des actions manuelles -->
+        <h3>Historique des actions enregistrées</h3>
+
+        <!-- Filtre pour le tableau des actions -->
+        <div class="section">
+            <label for="table-sensor-select" class="action-label">Filtre action :</label>
+            <select id="table-sensor-select">
+                <option value="">Sélectionner un type</option>
+                <!-- Exemples : "Arrosage", "Éclairage", "Ventilation", "Température" -->
+            </select>
+        </div>
+
+        <!-- Zone où sera injecté le tableau des actions -->
+        <div class="tableau"></div>
+    </main>
+
+    <!-- Scripts externes JS : interaction MQTT et récupération des données -->
+    <script src="{{ url_for('static', filename='js/envoyerDonnees.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/connexionMQTT.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/recupererDonnees.js') }}" defer></script>
+</body>
+</html>
