@@ -65,6 +65,21 @@
           <button id="btn-fermer" class="vent-btn">Fermer</button>
         </div>
 
+        <!-- ARROSAGE -->
+        <div class="action-group">
+          <label class="action-label" for="arrosage_duree">Commande d’arrosage :</label>
+          <input type="number" id="arrosage_duree" placeholder="Durée (min)" min="1" max="60">
+          <button id="btn-arroser">Lancer</button>
+        </div>
+
+        <!-- ÉCLAIRAGE -->
+        <div class="action-group">
+          <label class="action-label" for="eclairage_duree">Commande d’éclairage :</label>
+          <input type="number" id="eclairage_duree" placeholder="Durée (min)" min="1" max="60">
+          <button id="btn-eclairer">Allumer</button>
+        </div>
+
+
         <!-- AUTRES OPTIONS -->
         <div class="other-options">
           <span class="small-text">Autres options</span>
@@ -106,6 +121,32 @@
       btnFermer.classList.remove("ouvert");
       btnOuvrir.classList.remove("ferme");
     });
+
+        const arroserBtn = document.getElementById("btn-arroser");
+    const arrosageInput = document.getElementById("arrosage_duree");
+    const eclairerBtn = document.getElementById("btn-eclairer");
+    const eclairageInput = document.getElementById("eclairage_duree");
+
+    arroserBtn.addEventListener("click", () => {
+      const minutes = parseInt(arrosageInput.value);
+      if (!isNaN(minutes) && minutes > 0) {
+        console.log(`Arrosage lancé pour ${minutes} minutes`);
+        // ici tu peux ajouter publish MQTT ou autre
+      } else {
+        alert("Merci d’entrer une durée valide pour l’arrosage.");
+      }
+    });
+
+    eclairerBtn.addEventListener("click", () => {
+      const minutes = parseInt(eclairageInput.value);
+      if (!isNaN(minutes) && minutes > 0) {
+        console.log(`Éclairage lancé pour ${minutes} minutes`);
+        // idem ici pour MQTT
+      } else {
+        alert("Merci d’entrer une durée valide pour l’éclairage.");
+      }
+    });
+    
   </script>
 </body>
 </html>
