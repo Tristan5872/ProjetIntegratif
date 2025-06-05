@@ -211,3 +211,24 @@ textarea {
   font-size: 0.85em;
   color: #9b5229;
 }
+
+/* Boutons Ventilation */
+.vent-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 8px;
+  background-color: #f0f0f0;
+  transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+.vent-btn.ouvert {
+  background-color: #4CAF50; /* Vert */
+  color: white;
+}
+
+.vent-btn.ferme {
+  background-color: #f44336; /* Rouge */
+  color: white;
+}

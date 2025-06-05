@@ -7,7 +7,6 @@
   <link rel="icon" href="ressources/logo-serre.png" type="image/png">
 
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script src="C:\Users\enzod\OneDrive\Documents\IUT\GitProject\ProjetIntegratif\scripts\connexionMQTT.js"></script>
 </head>
 <body>
   <header>
@@ -61,8 +60,9 @@
 
         <!-- VENTILATION -->
         <div class="action-group">
-          <label for="ventilation-toggle" class="action-label">Modifier la ventilation :</label>
-          <button id="ventilation-toggle">Ouvrir/Fermer</button>
+          <label class="action-label">Modifier la ventilation :</label>
+          <button id="btn-ouvrir" class="vent-btn">Ouvrir</button>
+          <button id="btn-fermer" class="vent-btn">Fermer</button>
         </div>
 
         <!-- AUTRES OPTIONS -->
@@ -73,10 +73,6 @@
     </div>
   </div>
 
-  <script src="scripts/connexionMQTT.js" defer></script>
-  <script src="scripts/cacheLocal.js" defer></script>
-
-  <!-- Script pour gérer l'incrémentation de température -->
   <script>
     const tempDisplay = document.getElementById("temperature_action");
     const increaseBtn = document.getElementById("increase");
@@ -92,6 +88,23 @@
     decreaseBtn.addEventListener("click", () => {
       temperature -= 1;
       tempDisplay.textContent = `${temperature}°C`;
+    });
+
+    const btnOuvrir = document.getElementById("btn-ouvrir");
+    const btnFermer = document.getElementById("btn-fermer");
+
+    btnOuvrir.addEventListener("click", () => {
+      btnOuvrir.classList.add("ouvert");
+      btnFermer.classList.remove("ferme");
+      btnOuvrir.classList.remove("ferme");
+      btnFermer.classList.remove("ouvert");
+    });
+
+    btnFermer.addEventListener("click", () => {
+      btnFermer.classList.add("ferme");
+      btnOuvrir.classList.remove("ouvert");
+      btnFermer.classList.remove("ouvert");
+      btnOuvrir.classList.remove("ferme");
     });
   </script>
 </body>
