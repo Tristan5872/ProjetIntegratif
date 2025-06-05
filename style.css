@@ -232,3 +232,20 @@ textarea {
   background-color: #f44336; /* Rouge */
   color: white;
 }
+
+.map-placeholder {
+  border: 2px dashed #b5c99a;
+  background-color: #f9fff5;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: italic;
+  color: #8a9a78;
+  border-radius: 10px;
+
+  /* NOUVEAU pour que ça respecte les marges comme les indicateurs */
+  width: 100%;
+  max-width: 100%; /* empêche de dépasser le container */
+  box-sizing: border-box;
+}
