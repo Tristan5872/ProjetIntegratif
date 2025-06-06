@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 from ia import *
-
+import json
 import os
+import paho.mqtt.client as mqtt
 from influxdb_client import InfluxDBClient
 from dotenv import load_dotenv
 

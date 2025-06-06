@@ -1,8 +1,0 @@
-Ma serre connectée maintenant : légère pluie, 13°C, 89% humidité.
-Ma serre connectée à 15h : couvert, 16°C, 70% humidité.
-Limoges maintenant : légère pluie, 14°C, 94% humidité.
-Limoges à 15h : couvert, 19°C, 64% humidité.
-Brive maintenant : couvert, 17°C, 92% humidité.
-Brive à 15h : couvert, 21°C, 55% humidité.
-Périgueux maintenant : couvert, 18°C, 85% humidité.
-Périgueux à 15h : couvert, 20°C, 63% humidité.
