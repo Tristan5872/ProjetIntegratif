@@ -12,42 +12,86 @@
     <header>
         <div><strong>Serre Connectée</strong></div>
         <nav>
-            <a href="../index.html" >Accueil</a>
+            <a href="../index.html">Accueil</a>
             <a href="meteo.html">Météo</a>
             <a href="historique.html" class="active">Historique</a>
         </nav>
     </header>
 
-    <h1>Bienvenue sur la page historique</h1>
+    <main>
+        <h1>Bienvenue sur la page historique</h1>
 
-    <div class="container">
-        <div class="section temps indicators">
-            <div class="ajd indicator">Aujourd'hui</div>
-            <div class="semaine indicator">1 semaine</div>
-            <div class="mois indicator">1 mois</div>
-            <div class="six mois indicator">6 mois</div>
-            <div class="an indicator">1 an</div>
-        </div>
-    </div>
+        <!-- Choix de la période -->
+        <section class="container">
+            <div class="section temps indicators">
+                <button class="ajd indicator">Aujourd'hui</button>
+                <button class="semaine indicator">1 semaine</button>
+                <button class="mois indicator">1 mois</button>
+                <button class="six-mois indicator">6 mois</button>
+                <button class="an indicator">1 an</button>
+            </div>
+        </section>
 
-    <div>
-        <label for="sensor-select" class="action-label">Filtres :</label>
-        <select id="sensor-select">
-            <option value="">Filtres capteur-graphique</option>
-        </select>
-    </div>
+        <!-- Filtres pour les graphiques -->
+        <section class="filtres">
+            <label for="select-graphique" class="action-label">Filtres :</label>
+            <select id="select-graphique">
+                <option value="">Filtres capteur - graphique</option>
+                <!-- Options dynamiques en JS -->
+            </select>
+        </section>
 
-    <div class="graphique"></div>
+        <!-- Graphique dynamique -->
+        <section id="zone-graphique" class="graphique">
+            <!-- Script JS ou Chart.js affichera ici le graphique -->
+        </section>
 
-    <h3>Historique des actions de la serre grâce à BDD</h3>
+        <!-- Titre du tableau -->
+        <h3>Historique des actions de la serre grâce à la BDD</h3>
 
-    <div>
-        <label for="sensor-select" class="action-label">Filtres :</label>
-        <select id="sensor-select">
-            <option value="">filtre tableau</option>
-        </select>
-    </div>
+        <!-- Filtres pour le tableau -->
+        <section class="filtres">
+            <label for="select-tableau" class="action-label">Filtres :</label>
+            <select id="select-tableau">
+                <option value="">Filtre tableau</option>
+                <!-- Options dynamiques en JS -->
+            </select>
+        </section>
 
-    <script src="../scripts/"></script>
+        <!-- Tableau dynamique -->
+        <section id="zone-tableau">
+            <table id="tableau-historique">
+                <!-- En-têtes et lignes ajoutés dynamiquement -->
+            </table>
+        </section>
+    </main>
+
+    <script>
+  async function chargerTableau() {
+    try {
+      const res = await fetch('http://localhost:5000/api/historique');
+      const data = await res.json();
+
+      const tableau = document.getElementById('tableau-historique');
+      tableau.innerHTML = `
+        <tr><th>Date</th><th>Pièce</th><th>Température</th><th>Humidité</th><th>CO</th></tr>
+        ${data.map(ligne => `
+          <tr>
+            <td>${new Date(ligne._time).toLocaleDateString()}</td>
+            <td>${ligne.room}</td>
+            <td>${ligne.temp?.toFixed(1) ?? '-'}</td>
+            <td>${ligne.hum?.toFixed(1) ?? '-'}</td>
+            <td>${ligne.co ?? '-'}</td>
+          </tr>
+        `).join('')}
+      `;
+    } catch (error) {
+      console.error("Erreur lors du chargement des données InfluxDB :", error);
+    }
+  }
+
+  window.addEventListener('load', chargerTableau);
+</script>
+
 </body>
 </html>
