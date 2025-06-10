@@ -260,6 +260,8 @@ function setupSerreControls() {
       
       mouseX = event.clientX;
       mouseY = event.clientY;
+      // Rotation Y limitée entre -45° et 45°
+      targetRotationY = Math.max(Math.min(targetRotationY, Math.PI / 4), -Math.PI / 4);
     }
   }
 
