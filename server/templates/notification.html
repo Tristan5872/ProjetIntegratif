@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Surveillance Multi-Capteurs</title>
+  
+  <!-- Favicon du site -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_notif.css') }}">
+</head>
+<body>
+  <!-- En-tête avec titre -->
+  <header>
+    <div><strong>Surveillance Multi-Capteurs</strong></div>
+        <nav>
+        <a href="{{ url_for('home') }}">Accueil</a>
+        <a href="{{ url_for('meteo') }}">Météo</a>
+        <a href="{{ url_for('historique') }}">Historique</a>
+        <a href="{{ url_for('notification') }}" class="active">Surveillance</a>
+      </nav>
+  </header>
+
+  <div class="container">
+    <!-- Section indicateurs en temps réel -->
+    <div class="section">
+      <h2>Valeurs en temps réel</h2>
+      <div class="indicators">
+        <div class="indicator status">
+          Statut
+          <p id="status-text">Arrêtée</p>
+        </div>
+        <div class="indicator temp" id="temp-indicator">
+          🌡️ Température
+          <div class="sensor-value" id="temp-value">--°C</div>
+        </div>
+        <div class="indicator humidity" id="humidity-indicator">
+          💧 Humidité
+          <div class="sensor-value" id="humidity-value">--%</div>
+        </div>
+        <div class="indicator light" id="light-indicator">
+          ☀️ Luminosité
+          <div class="sensor-value" id="light-value">-- lux</div>
+        </div>
+        <div class="indicator co2" id="co2-indicator">
+          🌿 CO₂
+          <div class="sensor-value" id="co2-value">-- ppm</div>
+        </div>
+        <div class="indicator batterie" id="batterie-indicator">
+          🔋 Batterie
+          <div class="sensor-value" id="batterie-value">-- V</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section configuration des seuils -->
+    <div class="section">
+      <h3>Configuration des seuils d'alerte</h3>
+      
+      <div class="sensor-config">
+        <!-- Température -->
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <span class="sensor-icon">🌡️</span>
+            <span>Température</span>
+            <label class="switch">
+              <input type="checkbox" id="temp-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Min :</span>
+            <input type="number" id="temp-min" value="15" step="0.1">
+            <span class="unit">°C</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Max :</span>
+            <input type="number" id="temp-max" value="30" step="0.1">
+            <span class="unit">°C</span>
+          </div>
+        </div>
+
+        <!-- Humidité -->
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <span class="sensor-icon">💧</span>
+            <span>Humidité</span>
+            <label class="switch">
+              <input type="checkbox" id="humidity-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Min :</span>
+            <input type="number" id="humidity-min" value="40" step="1">
+            <span class="unit">%</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Max :</span>
+            <input type="number" id="humidity-max" value="80" step="1">
+            <span class="unit">%</span>
+          </div>
+        </div>
+
+        <!-- Luminosité -->
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <span class="sensor-icon">☀️</span>
+            <span>Luminosité</span>
+            <label class="switch">
+              <input type="checkbox" id="light-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Min :</span>
+            <input type="number" id="light-min" value="200" step="10">
+            <span class="unit">lux</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Max :</span>
+            <input type="number" id="light-max" value="50000" step="100">
+            <span class="unit">lux</span>
+          </div>
+        </div>
+
+        <!-- CO₂ -->
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <span class="sensor-icon">🌿</span>
+            <span>CO₂</span>
+            <label class="switch">
+              <input type="checkbox" id="co2-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Min :</span>
+            <input type="number" id="co2-min" value="300" step="10">
+            <span class="unit">ppm</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Max :</span>
+            <input type="number" id="co2-max" value="1500" step="10">
+            <span class="unit">ppm</span>
+          </div>
+        </div>
+
+        <!-- Batterie -->
+        <div class="sensor-card">
+          <div class="sensor-header">
+            <span class="sensor-icon">🔋</span>
+            <span>Batterie</span>
+            <label class="switch">
+              <input type="checkbox" id="batterie-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Min :</span>
+            <input type="number" id="batterie-min" value="2.8" step="0.01">
+            <span class="unit">V</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Max :</span>
+            <input type="number" id="batterie-max" value="4.3" step="0.01">
+            <span class="unit">V</span>
+          </div>
+        </div>
+      </div>
+      <!-- Configuration générale -->
+      <div class="interval-config">
+        <div class="config-row">
+          <span class="config-label" style="min-width: 120px;">Intervalle de mesure :</span>
+          <input type="number" id="intervalle-input" value="10" min="5" max="300" style="width: 100px;">
+          <span class="unit">secondes</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="action-group">
+          <label class="action-label">Contrôle de surveillance :</label>
+          <button id="btn-surveillance" onclick="toggleSurveillance()">Démarrer la surveillance</button>
+        </div>
+        
+        <div class="action-group">
+          <label class="action-label">Actions :</label>
+          <button onclick="testNotification()">Test de notification</button>
+          <button onclick="clearLogs()" class="danger">Effacer les logs</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section logs -->
+    <div class="section">
+      <h3>Journal de surveillance</h3>
+      <div id="logs" class="logs">🌾 Système de surveillance multi-capteurs initialisé<br>💡 Configurez les seuils et cliquez sur "Démarrer la surveillance"</div>
+    </div>
+  </div>
+
+  <script>
+    // Variables globales
+    let monitoring = false;
+    let monitoringInterval = null;
+    
+    // Configuration Telegram - À sécuriser côté serveur en production
+    const chatId = "-1002891053953";
+    const botToken = "8038960549:AAE_FxbNxZ3RIiU_RUI79zMt98QcLaZWy_g";
+
+    // Configuration des capteurs, batterie incluse
+    const sensors = {
+      temp: {
+        name: 'Température',
+        icon: '🌡️',
+        unit: '°C',
+        precision: 1
+      },
+      humidity: {
+        name: 'Humidité',
+        icon: '💧',
+        unit: '%',
+        precision: 0
+      },
+      light: {
+        name: 'Luminosité',
+        icon: '☀️',
+        unit: ' lux',
+        precision: 0
+      },
+      co2: {
+        name: 'CO₂',
+        icon: '🌿',
+        unit: ' ppm',
+        precision: 0
+      },
+      batterie: {
+        name: 'Batterie',
+        icon: '🔋',
+        unit: ' V',
+        precision: 2
+      }
+    };
+
+    // Éléments DOM
+    const btnSurveillance = document.getElementById('btn-surveillance');
+    const statusText = document.getElementById('status-text');
+    const logsDiv = document.getElementById('logs');
+    const intervalleInput = document.getElementById('intervalle-input');
+
+    /**
+     * Ajoute un message aux logs avec horodatage
+     */
+    function addLog(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const colors = {
+        alert: 'color: #ffcccb;',
+        success: 'color: #90EE90;',
+        warning: 'color: #ffd700;',
+        info: ''
+      };
+      logsDiv.innerHTML += `<div style="${colors[type] || ''}">[${timestamp}] ${message}</div>`;
+      logsDiv.scrollTop = logsDiv.scrollHeight;
+    }
+
+    /**
+     * Met à jour l'affichage du statut
+     */
+    function updateStatus(isMonitoring) {
+      if (isMonitoring) {
+        statusText.textContent = 'En cours';
+        statusText.parentElement.className = 'indicator status';
+        btnSurveillance.textContent = 'Arrêter la surveillance';
+        btnSurveillance.classList.add('monitoring');
+      } else {
+        statusText.textContent = 'Arrêtée';
+        statusText.parentElement.className = 'indicator';
+        btnSurveillance.textContent = 'Démarrer la surveillance';
+        btnSurveillance.classList.remove('monitoring');
+        // Reset des valeurs d'affichage
+        Object.keys(sensors).forEach(type => {
+          const valueElem = document.getElementById(`${type}-value`);
+          if (valueElem) valueElem.textContent = `--${sensors[type].unit}`;
+          const indicator = document.getElementById(`${type}-indicator`);
+          if (indicator) {
+            indicator.classList.remove('alert');
+            const badge = indicator.querySelector('.alert-badge');
+            if (badge) badge.remove();
+          }
+        });
+      }
+    }
+
+    /**
+     * Envoie une notification Telegram
+     */
+    async function sendTelegramNotification(message) {
+      try {
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.ok) {
+          addLog(`✅ Notification envoyée`, 'success');
+        } else {
+          addLog(`❌ Échec envoi: ${data.description}`, 'alert');
+        }
+      } catch (error) {
+        addLog(`❌ Erreur réseau: ${error.message}`, 'alert');
+      }
+    }
+
+    /**
+     * Vérifie si une valeur dépasse les seuils et déclenche notifications/affichage
+     */
+    function checkThresholds(sensorType, value) {
+      const enabledElem = document.getElementById(`${sensorType}-enabled`);
+      if (!enabledElem || !enabledElem.checked) return false;
+
+      const minElem = document.getElementById(`${sensorType}-min`);
+      const maxElem = document.getElementById(`${sensorType}-max`);
+      if (!minElem || !maxElem) return false;
+      const min = parseFloat(minElem.value);
+      const max = parseFloat(maxElem.value);
+
+      if (typeof value !== "number" || isNaN(value)) return false;
+
+      if (value < min || value > max) {
+        const sensor = sensors[sensorType];
+        const alertType = value < min ? 'MINIMUM' : 'MAXIMUM';
+        const threshold = value < min ? min : max;
+
+        // Mise à jour visuelle
+        const indicator = document.getElementById(`${sensorType}-indicator`);
+        if (indicator) {
+          indicator.classList.add('alert');
+          // Supprimer l'éventuel badge s'il existe
+          const badge = indicator.querySelector('.alert-badge');
+          if (badge) badge.remove();
+        }
+
+        // Message d'alerte
+        const message = `🚨 ALERTE SERRE - ${sensor.name.toUpperCase()}\n` +
+                    `${sensor.icon} Valeur ${alertType} dépassée!\n` +
+                    `📊 Valeur mesurée: ${value}${sensor.unit}\n` +
+                    `🎯 Seuil ${alertType.toLowerCase()}: ${threshold}${sensor.unit}\n` +
+                    `⏰ ${new Date().toLocaleString()}`;
+
+        sendTelegramNotification(message);
+        addLog(`🚨 ${sensor.name}: ${value}${sensor.unit} (seuil: ${min}-${max}${sensor.unit})`, 'alert');
+
+        return true;
+      } else {
+        // Valeur normale - retirer l'alerte visuelle
+        const indicator = document.getElementById(`${sensorType}-indicator`);
+        if (indicator) {
+          indicator.classList.remove('alert');
+          const badge = indicator.querySelector('.alert-badge');
+          if (badge) badge.remove();
+        }
+      }
+
+      return false;
+    }
+
+    /**
+     * Démarre ou arrête la surveillance
+     * (ne fait rien tout seul sans données, mais garde la logique bouton/logs)
+     */
+    function toggleSurveillance() {
+      if (monitoring) {
+        monitoring = false;
+        updateStatus(false);
+        addLog('🛑 Surveillance arrêtée', 'warning');
+      } else {
+        monitoring = true;
+        updateStatus(true);
+
+        // Compter les capteurs actifs
+        const activeCount = Object.keys(sensors).filter(type => {
+          const enabledElem = document.getElementById(`${type}-enabled`);
+          return enabledElem && enabledElem.checked;
+        }).length;
+        
+        addLog(`🚀 Surveillance démarrée (${activeCount} capteurs actifs)`, 'success');
+      }
+    }
+
+    /**
+     * Test d'envoi de notification
+     */
+    function testNotification() {
+      const message = `🧪 TEST DE NOTIFICATION\n` +
+                    `🌾 Système de surveillance serre\n` +
+                    `⏰ ${new Date().toLocaleString()}\n` +
+                    `✅ Toutes les connexions sont opérationnelles`;
+      sendTelegramNotification(message);
+      addLog('🧪 Test de notification envoyé', 'info');
+    }
+
+    /**
+     * Efface les logs
+     */
+    function clearLogs() {
+      logsDiv.innerHTML = '';
+      addLog('🧹 Logs effacés', 'info');
+    }
+
+    // Gestion des changements de configuration en temps réel
+    Object.keys(sensors).forEach(type => {
+      ['min', 'max', 'enabled'].forEach(property => {
+        const element = document.getElementById(`${type}-${property}`);
+        if (element) {
+          element.addEventListener('change', () => {
+            if (monitoring) {
+              const sensor = sensors[type];
+              addLog(`⚙️ ${sensor.name}: Configuration mise à jour`, 'info');
+            }
+          });
+        }
+      });
+    });
+
+    intervalleInput.addEventListener('change', () => {
+      if (monitoring) {
+        addLog(`⚙️ Attention: L'intervalle sera appliqué au prochain redémarrage`, 'warning');
+      }
+    });
+
+    // Message d'accueil
+    addLog('🌾 Système de surveillance multi-capteurs prêt', 'success');
+
+    // Fonction à appeler depuis fetchSerreData dans ton script APRES MAJ DOM !
+    function checkAllThresholdsFromDOM() {
+      // On parse la valeur courante affichée dans chaque capteur, puis on vérifie les seuils
+      // (On adapte pour batterie qui doit être float)
+      const temp = parseFloat(document.getElementById('temp-value').textContent);
+      checkThresholds('temp', temp);
+      const humidity = parseFloat(document.getElementById('humidity-value').textContent);
+      checkThresholds('humidity', humidity);
+      const light = parseFloat(document.getElementById('light-value').textContent);
+      checkThresholds('light', light);
+      const co2 = parseFloat(document.getElementById('co2-value').textContent);
+      checkThresholds('co2', co2);
+      const batterie = parseFloat(document.getElementById('batterie-value').textContent);
+      checkThresholds('batterie', batterie);
+    }
+
+    // Expose la fonction pour qu'elle soit appelée dans fetchSerreData
+    window.checkAllThresholdsFromDOM = checkAllThresholdsFromDOM;
+  </script>
+  <!-- À la fin du fichier, tu ajoutes ton script de fetch -->
+  <script src="{{ url_for('static', filename='connexionMQTT.js') }}"></script>
+  <script src="{{ url_for('static', filename='envoyerDonnees.js') }}"></script>
+  <script src="{{ url_for('static', filename='recupererDonnees.js') }}"></script>
+</body>
+</html>

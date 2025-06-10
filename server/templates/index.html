@@ -22,38 +22,74 @@
       <a href="{{ url_for('home') }}" class="active">Accueil</a>
       <a href="{{ url_for('meteo') }}">Météo</a>
       <a href="{{ url_for('historique') }}">Historique</a>
+      <a href="{{ url_for('notification') }}">Surveillance</a>
     </nav>
   </header>
 
   <!-- Section carte modifiable (placeholder ici) -->
-  <div class="section">
-    <h2>Carte modifiable de la serre</h2>
-    <div class="map-placeholder">(Ici 1)</div>
-  </div>
-
-  <!-- Affichage des indicateurs des capteurs -->
-  <div class="container">
-    <!-- Données capteurs intérieurs -->
-    <div class="section indicators">
-      <h3>Intérieur</h3>
-      <div class="indicator temp">Température <p id="temperature-int"></p></div>
-      <div class="indicator co2">CO₂ <p id="co2-int"></p></div>
-      <div class="indicator hum">Humidité <p id="humidity-int"></p></div>
+<!-- Section 3D de la serre (remplace la div map-placeholder) -->
+<div class="section">
+  <h2>Carte 3D de la serre</h2>
+  <div id="serre-3d-container" style="width: 100%; height: 500px; position: relative; border: 1px solid #ddd; border-radius: 8px;">
+    <div id="serre-3d-loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666;">
+      Chargement de la serre 3D...
     </div>
-
-    <!-- Données capteurs extérieurs -->
-    <div class="section indicators">
-      <h3>Extérieur</h3>
-      <div class="indicator temp">Température <p id="temperature-ext"></p></div>
-      <div class="indicator hum">Humidité <p id="humidity-ext"></p></div>
+    
+    <!-- Contrôles 3D -->
+    <div id="serre-3d-controls" style="position: absolute; bottom: 10px; left: 10px; background: rgba(255,255,255,0.9); padding: 8px; border-radius: 5px; font-size: 12px; z-index: 100;">
+      🖱️ Clic + glisser: Rotation | ⚙️ Molette: Zoom
     </div>
   </div>
+</div>
+
+<!-- Modale pour affichage des données capteur -->
+<div id="sensor-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; min-width: 300px;">
+    <h3 id="modal-sensor-title">Données Capteur</h3>
+    <div id="modal-sensor-data"></div>
+    <button onclick="closeSensorModal()" style="margin-top: 15px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Fermer</button>
+  </div>
+</div>
+
+<!-- AFFICHAGE DE LA SERRE EN 3D -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="{{ url_for('static', filename='js/serre3D.js') }}" defer></script>
+
+
+<!-- Affichage des indicateurs des capteurs -->
+<div class="container">
+  <!-- Données capteurs intérieurs -->
+  <div class="section indicators">
+    <h3>Intérieur</h3>
+    <div class="indicator temp">Température <p id="temperature-int"></p></div>
+    <div class="indicator co2">CO₂ <p id="co2-int"></p></div>
+    <div class="indicator hum">Humidité <p id="humidity-int"></p></div>
+    <div class="indicator light">Luminosité <p id="light-int"></p></div>
+    <div class="indicator vdd">Tension alimentation <p id="vdd-int"></p></div>
+    <div class="indicator motion">Présence <p id="motion-int"></p></div>
+  </div>
+
+  <!-- Données capteurs extérieurs -->
+  <div class="section indicators">
+    <h3>Extérieur</h3>
+    <div class="indicator temp">Température <p id="temperature-ext"></p></div>
+    <div class="indicator hum">Humidité <p id="humidity-ext"></p></div>
+    <div class="indicator light">Luminosité <p id="light-ext"></p></div>
+    <div class="indicator vdd">Tension alimentation <p id="vdd-ext"></p></div>
+    <div class="indicator motion">Présence <p id="motion-ext"></p></div>
+  </div>
+</div>
+
 
   <!-- Section prévisions météo ou conseils IA -->
   <div class="section">
-    <h3>Prévisions (conseils IA)</h3>
-    <textarea rows="4"></textarea>
-  </div>
+  <h3>Analyse Santé des Plantes</h3>
+  <div id="analyse-sante" class="box-ia" style="background-color: #f9fff9; border: 1px solid #c6e9c6; padding: 15px; border-radius: 8px;"></div>
+  <button onclick="analyserSantePlantes()" style="margin-top: 10px; background-color: #e0f5e0; border: 1px solid #98c798; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+    🔄 Refaire l’analyse
+  </button>
+</div>
+
 
   <!-- Section commandes manuelles (actions) -->
   <div class="section">
@@ -91,32 +127,29 @@
       </div>
 
       <!-- Groupe commande arrosage -->
-      <div class="action-group">
+      <!-- <div class="action-group">
         <label class="action-label" for="arrosage_duree">Commande d’arrosage :</label>
         <input type="number" id="arrosage_duree" placeholder="Durée (min)" min="1" max="60">
         <button id="btn-arroser">Lancer</button>
-      </div>
+      </div> -->
 
       <!-- Groupe commande éclairage -->
-      <div class="action-group">
+      <!-- <div class="action-group">
         <label class="action-label" for="eclairage_duree">Commande d’éclairage :</label>
         <input type="number" id="eclairage_duree" placeholder="Durée (min)" min="1" max="60">
         <button id="btn-eclairer">Allumer</button>
-      </div>
+      </div> -->
 
       <!-- Espace réservé pour futures options avancées -->
-      <div class="other-options">
+      <!-- <div class="other-options">
         <span class="small-text">Autres options</span>
-      </div>
+      </div> -->
     </div>
   </div>
 
   <!-- Script JavaScript pour gérer les interactions utilisateur -->
   <script>
-    /**
-     * Fonction qui vérifie qu'un capteur est sélectionné avant d'exécuter une action
-     * @returns {boolean} true si capteur sélectionné, false sinon
-     */
+    // Fonction qui vérifie qu'un capteur est sélectionné avant d'exécuter une action
     function capteurSelectionne() {
       const capteur = document.getElementById("sensor-select").value;
       if (capteur === "") {
@@ -223,12 +256,58 @@
       // Recharge la page entière pour appliquer les modifications liées au capteur sélectionné
       location.reload();
     });
-
   </script>
 
   <!-- Scripts externes pour fonctionnalités MQTT, envoi et récupération de données -->
   <script src="{{ url_for('static', filename='js/envoyerDonnees.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/connexionMQTT.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/recupererDonnees.js') }}" defer></script>
+
+
+  <script>
+  async function analyserSantePlantes() {
+    const temperature_int = document.getElementById("temperature-int").textContent;
+    const humidite_int = document.getElementById("humidity-int").textContent;
+    const co2_int = document.getElementById("co2-int").textContent;
+    const lumiere_int = document.getElementById("light-int").textContent;
+
+    const temperature_ext = document.getElementById("temperature-ext").textContent;
+    const humidite_ext = document.getElementById("humidity-ext").textContent;
+    const lumiere_ext = document.getElementById("light-ext").textContent;
+
+    const data = {
+      temperature_int,
+      humidite_int,
+      co2_int,
+      lumiere_int,
+      temperature_ext,
+      humidite_ext,
+      lumiere_ext
+    };
+
+    try {
+      const response = await fetch('/analyse_sante', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        document.getElementById("analyse-sante").innerHTML = result.recommendation;
+      } else {
+        document.querySelector(".section textarea").value = "Erreur lors de l’analyse IA.";
+      }
+    } catch (error) {
+      document.querySelector(".section textarea").value = "Erreur réseau : " + error;
+    }
+  }
+
+  // Lancer l'analyse automatiquement au chargement de la page
+  window.addEventListener('load', analyserSantePlantes);
+</script>
+
 </body>
 </html>

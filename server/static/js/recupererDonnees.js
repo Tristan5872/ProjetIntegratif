@@ -12,16 +12,22 @@ async function fetchSerreData() {
         // Mise à jour des éléments du DOM avec les valeurs récupérées ou 'N/A' si absentes
 
         // Intérieur
-        document.getElementById('temperature-int').textContent = data.interieur.temperature ?? 'N/A';
-        document.getElementById('co2-int').textContent = data.interieur.co2 ?? 'N/A';
-        document.getElementById('humidity-int').textContent = data.interieur.humidity ?? 'N/A';
-
+        document.getElementById('temperature-int').textContent = (data.interieur.temperature ?? 'N/A') + " °C";
+        document.getElementById('co2-int').textContent = (data.interieur.co2 ?? 'N/A') + " ppm";
+        document.getElementById('humidity-int').textContent = (data.interieur.humidity ?? 'N/A') + " %";
+        document.getElementById('light-int').textContent = (data.interieur.light ?? 'N/A') + " lux";         // Intensité lumineuse intérieure
+        document.getElementById('vdd-int').textContent = (data.interieur.vdd / 1000).toFixed(2) + ' V' ?? 'N/A';
+        document.getElementById('motion-int').textContent = (data.interieur.motion ?? 'N/A') ? "Présence détectée" : "Aucune présence"; // Détection de mouvement intérieure
 
         console.log(data.interieur, data.exterieur);
 
         // Extérieur
-        document.getElementById('temperature-ext').textContent = data.exterieur.temperature ?? 'N/A';
-        document.getElementById('humidity-ext').textContent = data.exterieur.humidity ?? 'N/A';
+        document.getElementById('temperature-ext').textContent = (data.exterieur.temperature ?? 'N/A') + " °C";
+        document.getElementById('humidity-ext').textContent = (data.exterieur.humidity ?? 'N/A') + " %";
+        document.getElementById('light-ext').textContent = (data.exterieur.light ?? 'N/A') + " lux";         // Intensité lumineuse extérieure
+        document.getElementById('vdd-ext').textContent = (data.exterieur.vdd / 1000).toFixed(2) + ' V' ?? 'N/A';
+        document.getElementById('motion-ext').textContent = (data.exterieur.motion ?? 'N/A') ? "Présence détectée" : "Aucune présence"; // Détection de mouvement extérieure
+
 
     } catch (error) {
         // Gestion des erreurs lors de la récupération des données
@@ -134,25 +140,25 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById("table-sensor-select").addEventListener("change", (e) => {
   const action = e.target.value;
 
-  // Exemple d'historique local (à remplacer par un vrai appel API si besoin)
-  const historique = [
-    { date: "2025-06-05 10:12", action: "chauffage_on" },
-    { date: "2025-06-05 11:10", action: "chauffage_off" }
-  ];
+  fetch('/historique_data')
+    .then(response => response.json())
+    .then(historique => {
+      const filtré = historique.filter(ligne => action === "" || ligne.action === action);
 
-  // Filtre sur l'action choisie (vide = tout afficher)
-  const filtré = historique.filter(ligne => action === "" || ligne.action === action);
+      const div = document.querySelector(".tableau");
+      div.innerHTML = `
+        <table>
+          <thead><tr><th>Date</th><th>Action</th></tr></thead>
+          <tbody>
+            ${filtré.map(l => `<tr><td>${l.date}</td><td>${l.action}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      `;
+    })
+    .catch(error => {
+      console.error("Erreur lors de la récupération de l'historique :", error);
+    });
 
-  // Génération du tableau HTML affiché dans le div dédié
-  const div = document.querySelector(".tableau");
-  div.innerHTML = `
-    <table>
-      <thead><tr><th>Date</th><th>Action</th></tr></thead>
-      <tbody>
-        ${filtré.map(l => `<tr><td>${l.date}</td><td>${l.action}</td></tr>`).join("")}
-      </tbody>
-    </table>
-  `;
 });
 
 // Ajout d'écouteurs sur les boutons de sélection de période de temps
@@ -173,8 +179,53 @@ document.querySelectorAll(".temps .indicator").forEach(bouton => {
   });
 });
 
-// Exemple de fonction de filtrage à implémenter selon ta logique métier
+// Au chargement, on affiche tout l'historique par défaut
+window.addEventListener("load", () => {
+  filtrerParPeriode("ajd");
+  document.querySelectorAll(".temps .indicator").forEach(b => b.classList.remove("actif"));
+  document.querySelector(".temps .ajd")?.classList.add("actif");
+});
+
 function filtrerParPeriode(periode) {
-  // Ici tu peux appeler une API, ou filtrer localement les données affichées
-  console.log("🔍 Chargement des données pour :", periode);
+  fetch(`/historique_data/${periode}`)
+    .then(response => response.json())
+    .then(historique => {
+      const div = document.querySelector(".tableau");
+
+      if (!historique || historique.length === 0) {
+        div.innerHTML = "<p>Aucune donnée disponible pour cette période.</p>";
+        return;
+      }
+
+      div.innerHTML = `
+        <table>
+          <thead><tr><th>Date</th><th>Action</th></tr></thead>
+          <tbody>
+            ${historique.map(l => `<tr><td>${l.date}</td><td>${l.action}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      `;
+    })
+    .catch(error => {
+      console.error("Erreur lors de la récupération de l'historique :", error);
+    });
 }
+
+// ⚙️ Gestion des boutons de période
+document.querySelectorAll(".temps .indicator").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const periode = btn.classList[0]; // ex: ajd, semaine, mois, etc.
+    filtrerParPeriode(periode);
+
+    // Met à jour le bouton actif
+    document.querySelectorAll(".temps .indicator").forEach(b => b.classList.remove("actif"));
+    btn.classList.add("actif");
+  });
+});
+
+// ⏱️ Affichage par défaut : aujourd’hui
+window.addEventListener("load", () => {
+  filtrerParPeriode("ajd");
+  document.querySelectorAll(".temps .indicator").forEach(b => b.classList.remove("actif"));
+  document.querySelector(".temps .ajd")?.classList.add("actif");
+});

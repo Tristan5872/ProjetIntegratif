@@ -18,6 +18,7 @@
       <a href="{{ url_for('home') }}">Accueil</a>
       <a href="{{ url_for('meteo') }}" class="active">Météo</a>
       <a href="{{ url_for('historique') }}">Historique</a>
+      <a href="{{ url_for('notification') }}">Surveillance</a>
     </nav>
   </header>
 
@@ -25,15 +26,10 @@
     <h1 class="center">Météo</h1>
 
     <!-- Semaines -->
-    <div class="section semaine indicators">
-      <div class="lundi indicator">Lundi</div>
-      <div class="mardi indicator">Mardi</div>
-      <div class="mercredi indicator">Mercredi</div>
-      <div class="jeudi indicator">Jeudi</div>
-      <div class="vendredi indicator">Vendredi</div>
-      <div class="samedi indicator">Samedi</div>
-      <div class="dimanche indicator">Dimanche</div>
-    </div>
+    <!-- Semaines dynamiques -->
+  <div class="section semaine indicators" id="semaine-dynamique">
+    <!-- Jours générés dynamiquement -->
+  </div>
 
     <!-- Cartes météo -->
 
@@ -81,6 +77,31 @@
       { nom: "Brive", lat: 45.1591, lon: 1.533, offset: [25, 40] },
       { nom: "Périgueux", lat: 45.184, lon: 0.7211, offset: [25, 40] }
     ];
+async function getWeeklyForecast(ville) {
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${ville.lat}&lon=${ville.lon}&units=metric&lang=fr&appid=${apiKey}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const texte = [];
+
+  const maintenant = new Date();
+  for (let i = 0; i < 7; i++) {
+    const jour = new Date();
+    jour.setDate(maintenant.getDate() + i);
+
+    [6, 12, 18].forEach(h => {
+      const item = data.list.find(entry => {
+        const date = new Date(entry.dt_txt);
+        return date.getDate() === jour.getDate() && date.getHours() === h;
+      });
+
+      if (item) {
+        texte.push(`${ville.nom} - ${jour.toLocaleDateString()} ${h}h : ${item.weather[0].description}, ${Math.round(item.main.temp)}°C, ${item.main.humidity}% humidité.`);
+      }
+    });
+  }
+
+  return texte;
+}
 
     function afficherMeteo(villes, mapId, mode = "current", dateJour = new Date(), heureChoisie = 12) {
       if (mapId === "map-forecast" && mapForecast) {
@@ -201,8 +222,51 @@
       return target;
     }
 
+  const joursSemaine = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+
+function genererBarreJours() {
+  const container = document.getElementById("semaine-dynamique");
+  container.innerHTML = "";
+
+  const today = new Date();
+
+  for (let i = 0; i < 7; i++) {
+    const jourDate = new Date();
+    jourDate.setDate(today.getDate() + i);
+    const jourNom = joursSemaine[jourDate.getDay()];
+    const jourTexte = jourNom.charAt(0).toUpperCase() + jourNom.slice(1);
+
+    const div = document.createElement("div");
+    div.className = `indicator ${jourNom}`;
+    div.textContent = jourTexte;
+
+    if (i === 0) div.classList.add("actif");
+
+    div.addEventListener("click", () => {
+      document.querySelectorAll(".semaine .indicator").forEach(b => b.classList.remove("actif"));
+      div.classList.add("actif");
+
+      const heure = parseInt(document.getElementById("filtre-periode").value);
+      const dateCible = new Date();
+      dateCible.setDate(today.getDate() + i);
+      afficherMeteo(villes, "map-forecast", "forecast", dateCible, heure);
+
+      document.getElementById("titre-prevision").textContent = "Prévisions à partir de " + (
+        heure === 0 ? "0h (nuit)" :
+        heure === 6 ? "6h (matin)" :
+        heure === 12 ? "12h (après-midi)" :
+        heure === 18 ? "18h (soirée)" :
+        heure + "h"
+      );
+    });
+
+    container.appendChild(div);
+  }
+}
+
     // Chargement initial
     document.addEventListener("DOMContentLoaded", () => {
+      genererBarreJours();
       afficherMeteo(villes, "map-now", "current");
       const heureInitiale = parseInt(document.getElementById("filtre-periode").value);
       const maintenant = new Date();
@@ -218,14 +282,6 @@
     );
 
     // Sélectionne automatiquement le jour actuel
-    const todayIndex = new Date().getDay(); // 0 = dimanche, 1 = lundi, ...
-    const jours = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
-    const aujourdHui = jours[todayIndex];
-    const boutonJour = document.querySelector(`.semaine .${aujourdHui}`);
-
-    if (boutonJour) {
-      boutonJour.classList.add("actif");
-    }
 
       lancerAnalyseIA();
       document.getElementById("refresh-ai").addEventListener("click", lancerAnalyseIA);
