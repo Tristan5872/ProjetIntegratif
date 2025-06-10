@@ -268,9 +268,17 @@ function setupSerreControls() {
   }
 
   function onSerreWheel(event) {
-    const scale = event.deltaY > 0 ? 1.1 : 0.9;
-    serreCamera.position.multiplyScalar(scale);
-    serreCamera.lookAt(0, 1, 0);
+    event.preventDefault();
+    const zoomSpeed = 0.1;
+    const delta = event.deltaY * zoomSpeed;
+
+    // Nouvelle position limitée
+    const distance = serreCamera.position.length();
+    const newDistance = THREE.MathUtils.clamp(distance + delta, 10, 30); // Limites min/max
+
+    // Direction depuis l'origine (0, 0, 0)
+    const direction = serreCamera.position.clone().normalize();
+    serreCamera.position.copy(direction.multiplyScalar(newDistance));
   }
 
   function onSerreClick(event) {
