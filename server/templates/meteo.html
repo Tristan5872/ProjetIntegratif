@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Météo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Favicon & CSS -->
+  <link rel="icon" href="{{ url_for('static', filename='ressources/logo-serre.png') }}" type="image/png">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+
+<body>
+  <header>
+    <div><strong>Serre Connectée</strong></div>
+    <nav>
+      <a href="{{ url_for('home') }}">Accueil</a>
+      <a href="{{ url_for('meteo') }}" class="active">Météo</a>
+      <a href="{{ url_for('historique') }}">Historique</a>
+      <a href="{{ url_for('notification') }}">Surveillance</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1 class="center">Météo</h1>
+
+    <!-- Semaines -->
+    <!-- Semaines dynamiques -->
+  <div class="section semaine indicators" id="semaine-dynamique">
+    <!-- Jours générés dynamiquement -->
+  </div>
+
+    <!-- Cartes météo -->
+
+    <div class="section" id="filtre-periode-wrapper">
+      <label for="filtre-periode">Choisir la période :</label>
+      <select id="filtre-periode">
+        <option value="6">Matin</option>
+        <option value="12" selected>Après-midi</option>
+        <option value="18">Soirée</option>
+        <option value="0">Nuit</option>
+      </select>
+    </div>
+
+    <div class="section meteo indicators">
+      <div class="matin indicator">
+        <div class="map-title">Actuellement</div>
+        <div id="map-now" class="carte-meteo"></div>
+      </div>
+
+      <div class="apres-midi indicator">
+        <div class="map-title" id="titre-prevision">Prévisions</div>
+        <div id="map-forecast" class="carte-meteo"></div>
+      </div>
+    </div>
+
+    <!-- Analyse IA -->
+    <div id="ai-analysis">
+      <h2>Analyse IA</h2>
+      <div id="ai-content"><em>Chargement des données météo...</em></div>
+      <button id="refresh-ai">🔄 Actualiser l'analyse</button>
+    </div>
+  </main>
+
+  <!-- Leaflet & Scripts -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    let mapForecast = null;
+
+    const apiKey = "f73e9c1ed2c8007ded08388c1007780e";
+
+    const villes = [
+      { nom: "Ma serre connectée", lat: 45.6368, lon: 1.0084, offset: [25, 40] },
+      { nom: "Limoges", lat: 45.8336, lon: 1.2476, offset: [25, 40] },
+      { nom: "Brive", lat: 45.1591, lon: 1.533, offset: [25, 40] },
+      { nom: "Périgueux", lat: 45.184, lon: 0.7211, offset: [25, 40] }
+    ];
+async function getWeeklyForecast(ville) {
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${ville.lat}&lon=${ville.lon}&units=metric&lang=fr&appid=${apiKey}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const texte = [];
+
+  const maintenant = new Date();
+  for (let i = 0; i < 7; i++) {
+    const jour = new Date();
+    jour.setDate(maintenant.getDate() + i);
+
+    [6, 12, 18].forEach(h => {
+      const item = data.list.find(entry => {
+        const date = new Date(entry.dt_txt);
+        return date.getDate() === jour.getDate() && date.getHours() === h;
+      });
+
+      if (item) {
+        texte.push(`${ville.nom} - ${jour.toLocaleDateString()} ${h}h : ${item.weather[0].description}, ${Math.round(item.main.temp)}°C, ${item.main.humidity}% humidité.`);
+      }
+    });
+  }
+
+  return texte;
+}
+
+    function afficherMeteo(villes, mapId, mode = "current", dateJour = new Date(), heureChoisie = 12) {
+      if (mapId === "map-forecast" && mapForecast) {
+        mapForecast.remove(); // Supprime l'ancienne carte
+      }
+
+      const map = L.map(mapId).setView([45.7, 1.2], 9);
+
+      if (mapId === "map-forecast") {
+        mapForecast = map; // Mémorise la nouvelle carte
+      }
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      setTimeout(() => map.invalidateSize(), 200);
+
+      villes.forEach(ville => {
+        const url = `https://api.openweathermap.org/data/2.5/${mode === "current" ? "weather" : "forecast"}?lat=${ville.lat}&lon=${ville.lon}&units=metric&lang=fr&appid=${apiKey}`;
+
+        fetch(url)
+          .then(res => res.json())
+          .then(data => {
+            let weather = {};
+            if (mode === "current") {
+              weather = {
+                icon: data.weather[0].icon,
+                description: data.weather[0].description,
+                temp: Math.round(data.main.temp),
+                humidity: data.main.humidity
+              };
+            } else {
+              const target = data.list.find(item => {
+              const itemDate = new Date(item.dt_txt);
+              return itemDate.getHours() === heureChoisie &&
+                    itemDate.getDate() === dateJour.getDate() &&
+                    itemDate.getMonth() === dateJour.getMonth();
+            }) || data.list[0];
+
+              weather = {
+                icon: target.weather[0].icon,
+                description: target.weather[0].description,
+                temp: Math.round(target.main.temp),
+                humidity: target.main.humidity
+              };
+            }
+
+            const iconUrl = `https://openweathermap.org/img/wn/${weather.icon}@2x.png`;
+
+            const marker = L.marker([ville.lat, ville.lon], {
+              icon: L.icon({
+                iconUrl: iconUrl,
+                iconSize: [80, 80],
+                iconAnchor: ville.offset
+              })
+            }).addTo(map);
+
+            marker.bindPopup(`
+              <strong>${ville.nom}</strong><br>
+              <img src="${iconUrl}" style="height:1.4em;"> ${weather.description}<br>
+              🌡️ ${weather.temp}°C<br>
+              💧 ${weather.humidity}%
+            `);
+          });
+      });
+    }
+
+    async function getWeather(ville, mode) {
+      const url = `https://api.openweathermap.org/data/2.5/${mode === "current" ? "weather" : "forecast"}?lat=${ville.lat}&lon=${ville.lon}&units=metric&lang=fr&appid=${apiKey}`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (mode === "current") {
+        return `${ville.nom} maintenant : ${data.weather[0].description}, ${Math.round(data.main.temp)}°C, ${data.main.humidity}% humidité.`;
+      } else {
+        const now = new Date();
+        const target = data.list.find(item => {
+          const itemDate = new Date(item.dt_txt);
+          return itemDate.getHours() === 15 && itemDate.getDate() === now.getDate();
+        }) || data.list[0];
+
+        return `${ville.nom} à 15h : ${target.weather[0].description}, ${Math.round(target.main.temp)}°C, ${target.main.humidity}% humidité.`;
+      }
+    }
+
+    async function lancerAnalyseIA() {
+      const container = document.getElementById('ai-content');
+      container.innerHTML = "<em>Analyse en cours...</em>";
+      document.getElementById('refresh-ai').style.display = "none";
+
+      const meteoTexte = [];
+      for (const ville of villes) {
+        meteoTexte.push(await getWeather(ville, "current"));
+        meteoTexte.push(await getWeather(ville, "forecast"));
+      }
+
+      const response = await fetch("/ai_analysis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ meteo: meteoTexte.join("\n") })
+      });
+
+      const data = await response.json();
+      console.log("Réponse IA :", data); // 🛠️ Corrigé `onsole.log`
+
+      container.innerHTML = data.recommendation;
+      document.getElementById('refresh-ai').style.display = "inline-block";
+    }
+
+    function getDateOfNext(dayName) {
+      const days = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+      const today = new Date();
+      const todayIndex = today.getDay();
+      const dayIndex = days.indexOf(dayName.toLowerCase());
+      const diff = (dayIndex - todayIndex + 7) % 7;
+      const target = new Date();
+      target.setDate(today.getDate() + diff);
+      return target;
+    }
+
+  const joursSemaine = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+
+function genererBarreJours() {
+  const container = document.getElementById("semaine-dynamique");
+  container.innerHTML = "";
+
+  const today = new Date();
+
+  for (let i = 0; i < 7; i++) {
+    const jourDate = new Date();
+    jourDate.setDate(today.getDate() + i);
+    const jourNom = joursSemaine[jourDate.getDay()];
+    const jourTexte = jourNom.charAt(0).toUpperCase() + jourNom.slice(1);
+
+    const div = document.createElement("div");
+    div.className = `indicator ${jourNom}`;
+    div.textContent = jourTexte;
+
+    if (i === 0) div.classList.add("actif");
+
+    div.addEventListener("click", () => {
+      document.querySelectorAll(".semaine .indicator").forEach(b => b.classList.remove("actif"));
+      div.classList.add("actif");
+
+      const heure = parseInt(document.getElementById("filtre-periode").value);
+      const dateCible = new Date();
+      dateCible.setDate(today.getDate() + i);
+      afficherMeteo(villes, "map-forecast", "forecast", dateCible, heure);
+
+      document.getElementById("titre-prevision").textContent = "Prévisions à partir de " + (
+        heure === 0 ? "0h (nuit)" :
+        heure === 6 ? "6h (matin)" :
+        heure === 12 ? "12h (après-midi)" :
+        heure === 18 ? "18h (soirée)" :
+        heure + "h"
+      );
+    });
+
+    container.appendChild(div);
+  }
+}
+
+    // Chargement initial
+    document.addEventListener("DOMContentLoaded", () => {
+      genererBarreJours();
+      afficherMeteo(villes, "map-now", "current");
+      const heureInitiale = parseInt(document.getElementById("filtre-periode").value);
+      const maintenant = new Date();
+      const heureActuelle = maintenant.getHours().toString().padStart(2, '0') + "h" + maintenant.getMinutes().toString().padStart(2, '0');
+      document.querySelector('.matin .map-title').textContent = "Actuellement (" + heureActuelle + ")";
+      afficherMeteo(villes, "map-forecast", "forecast", new Date(), heureInitiale);
+      document.getElementById("titre-prevision").textContent = "Prévisions à partir de " + (
+      heureInitiale === 0 ? "0h (nuit)" :
+      heureInitiale === 6 ? "6h (matin)" :
+      heureInitiale === 12 ? "12h (après-midi)" :
+      heureInitiale === 18 ? "18h (soirée)" :
+      heureInitiale + "h"
+    );
+
+    // Sélectionne automatiquement le jour actuel
+
+      lancerAnalyseIA();
+      document.getElementById("refresh-ai").addEventListener("click", lancerAnalyseIA);
+    });
+
+    document.querySelectorAll(".semaine .indicator").forEach(bouton => {
+    bouton.addEventListener("click", () => {
+    // Supprime les classes actives
+    document.querySelectorAll(".semaine .indicator").forEach(b => b.classList.remove("actif"));
+    bouton.classList.add("actif");
+
+    // Calcule la date du jour sélectionné
+    const jour = bouton.classList[0];  // ex: "mercredi"
+    const dateCible = getDateOfNext(jour);
+
+    // Recharge les prévisions météo pour cette date
+    const heure = parseInt(document.getElementById("filtre-periode").value);
+    afficherMeteo(villes, "map-forecast", "forecast", dateCible, heure);
+    document.getElementById("titre-prevision").textContent = "Prévisions à partir de " + (
+      heure === 0 ? "0h (nuit)" :
+      heure === 6 ? "6h (matin)" :
+      heure === 12 ? "12h (après-midi)" :
+      heure === 18 ? "18h (soirée)" :
+      heure + "h"
+    );
+  });
+});
+
+document.getElementById("filtre-periode").addEventListener("change", () => {
+  const heure = parseInt(document.getElementById("filtre-periode").value);
+  const boutonActif = document.querySelector(".semaine .indicator.actif");
+  const jour = boutonActif
+    ? boutonActif.classList[0]
+    : new Date().toLocaleDateString("fr-FR", { weekday: "long" }).toLowerCase();
+  const dateCible = getDateOfNext(jour);
+  afficherMeteo(villes, "map-forecast", "forecast", dateCible, heure);
+  document.getElementById("titre-prevision").textContent = "Prévisions à partir de " + (
+  heure === 0 ? "0h (nuit)" :
+  heure === 6 ? "6h (matin)" :
+  heure === 12 ? "12h (après-midi)" :
+  heure === 18 ? "18h (soirée)" :
+  heure + "h"
+);
+});
+
+  </script>
+
+  <script src="{{ url_for('static', filename='js/envoyerDonnees.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/connexionMQTT.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/recupererDonnees.js') }}" defer></script>
+</body>
+</html>

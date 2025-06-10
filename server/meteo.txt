@@ -1,0 +1,8 @@
+Ma serre connectée maintenant : ciel dégagé, 24°C, 33% humidité.
+Ma serre connectée à 15h : ciel dégagé, 27°C, 28% humidité.
+Limoges maintenant : ciel dégagé, 25°C, 46% humidité.
+Limoges à 15h : ciel dégagé, 28°C, 31% humidité.
+Brive maintenant : ciel dégagé, 26°C, 36% humidité.
+Brive à 15h : ciel dégagé, 29°C, 32% humidité.
+Périgueux maintenant : ciel dégagé, 29°C, 44% humidité.
+Périgueux à 15h : ciel dégagé, 30°C, 36% humidité.

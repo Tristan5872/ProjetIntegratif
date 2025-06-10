@@ -1,0 +1,372 @@
+/* Corps de la page : police, marges, couleur de fond et texte */
+body {
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f7f1;
+  color: #2e3b2c;
+}
+
+/* En-tête principal avec image de fond, couleurs, disposition flex et ombre */
+header {
+  background-color: #8ab66b;
+  background-image: url('/static/ressources/feuillage.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff;
+  padding: 15px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-height: 100px;
+}
+
+/* Style du titre dans l’en-tête avec police monospace, couleur et ombre de texte */
+header strong {
+  font-size: 2.2em;
+  font-weight: 800;
+  font-family: 'Courier New', Courier, monospace; /* rustique et simple */
+  color: #c9c502; /* vert olive plus naturel */
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Ajout d’une icône (gerbe de blé) avant le titre */
+header strong::before {
+  content: "🌾"; /* gerbe de blé pour l’agriculture */
+  font-size: 1.9em;
+  transform: translateY(1px);
+}
+
+/* Barre de navigation : disposition en ligne avec espace entre les liens */
+nav {
+  display: flex;
+  gap: 20px;
+}
+
+/* Style au survol des liens : fond vert clair, couleur foncée, légère mise à l’échelle */
+nav a:hover {
+  background-color: #d9f7c9;
+  color: #2e3b2c;
+  transform: scale(1.05);
+}
+
+/* Style général des liens de navigation : sans soulignement, couleur, arrondi */
+nav a {
+  text-decoration: none;
+  color: #2e3b2c;
+  font-weight: bold;
+  padding: 8px 14px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-sizing: border-box; /* gestion des dimensions */
+  font-size: 1em;
+}
+
+/* Style du lien actif : fond gris, disable du curseur et interaction, ombre interne */
+nav a.active {
+  background-color: #b0b0b0;  /* gris doux */
+  color: #2e3b2c;
+  cursor: default;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+  transform: none;
+  pointer-events: none;
+  border: 1px solid #8a8a8a;
+  padding: 8px 14px; /* cohérence avec les autres liens */
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+/* Conteneur principal : largeur max, centrage, fond blanc, arrondi et ombre douce */
+.container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Sections internes avec marge inférieure pour espacement */
+.section {
+  margin-bottom: 30px;
+}
+
+/* Groupe d’indicateurs : disposition en ligne avec espace entre eux */
+.indicators {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* Style général d’un indicateur : flexibilité, padding, arrondi, gras, centré et ombre */
+.indicator {
+  flex: 1;
+  padding: 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Indicateur actif : fond vert doux, texte blanc, ombre plus visible */
+.indicator.actif {
+  background-color: #8ab66b;  /* Vert doux */
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Couleurs spécifiques pour chaque type de capteur */
+
+/* Température : fond rouge clair, texte rouge foncé */
+.indicator.temp {
+  background-color: #ffcccb;
+  color: #a80000;
+}
+
+/* CO2 : fond vert très clair, texte vert foncé */
+.indicator.co2 {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+/* Humidité : fond bleu clair, texte bleu foncé */
+.indicator.hum {
+  background-color: #cfe2ff;
+  color: #084298;
+}
+
+/* Lumière : fond jaune clair, texte marron */
+.indicator.light {
+  background-color: #fff3cd;
+  color: #664d03;
+}
+
+/* Tension alimentation (VDD) : fond gris clair, texte gris foncé */
+.indicator.vdd {
+  background-color: #e2e3e5;
+  color: #41464b;
+}
+
+/* Mouvement : fond violet clair, texte violet foncé */
+.indicator.motion {
+  background-color: #d1c4e9;
+  color: #4527a0;
+}
+
+/* Wrapper du filtre période : positionné en haut à droite avec fond blanc et ombre */
+#filtre-periode-wrapper {
+  position: absolute;
+  top: 130px;
+  right: 40px;
+  background-color: #f9f9f9;
+  padding: 0.5em;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+/* Carte placeholder : bordure en tirets, fond clair, hauteur fixe, texte centré en italique */
+.map-placeholder {
+  border: 2px dashed #b5c99a;
+  background-color: #f9fff5;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: italic;
+  color: #8a9a78;
+  border-radius: 10px;
+}
+
+/* En-tête des actions : flex avec espacement entre les éléments, wrap */
+.actions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+/* Bloc actions : colonne avec espacement, bordure, arrondi, fond vert clair pâle et ombre interne */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 15px;
+  border: 1px solid #dfe8d5;
+  border-radius: 10px;
+  background-color: #f4fbee;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.03);
+}
+
+/* Groupe d’actions : ligne avec alignement et espacement */
+.action-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Champs numériques dans actions : largeur fixe, padding, bordure arrondie, fond clair */
+.action-group input[type="number"] {
+  width: 100px;
+  padding: 6px;
+  font-size: 1em;
+  border-radius: 6px;
+  border: 1px solid #cbd8c0;
+  background-color: #f0f7eb;
+}
+
+/* Labels des actions : largeur minimale, gras, couleur verte foncée */
+.action-label {
+  min-width: 180px;
+  font-weight: bold;
+  color: #446033;
+}
+
+/* Styles généraux pour boutons et sélecteurs : padding, bordure arrondie, fond clair, transition */
+button, select {
+  padding: 7px 12px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid #cbd8c0;
+  background-color: #f0f7eb;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+/* Hover sur boutons et sélecteurs : fond vert clair, légère mise à l’échelle */
+button:hover, select:hover {
+  background-color: #dff2d8;
+  transform: scale(1.02);
+}
+
+/* Appui sur bouton : légère réduction de taille */
+button:active {
+  transform: scale(0.98);
+}
+
+/* Zone de texte : largeur pleine, padding, arrondi, couleur et fond adaptés */
+textarea {
+  width: 100%;
+  padding: 12px;
+  resize: vertical;
+  font-size: 1em;
+  border-radius: 8px;
+  border: 1px solid #cbd8c0;
+  background-color: #f8fff5;
+  color: #2e3b2c;
+}
+
+/* Texte petit : taille réduite, couleur marron orangé pour notes ou avertissements */
+.small-text {
+  font-size: 0.85em;
+  color: #9b5229;
+}
+
+/* Boutons de chauffage allumé : fond bleu clair, texte blanc */
+.chauffage-on {
+  background-color: rgb(98, 158, 238);
+  color: white;
+  /* autres styles spécifiques */
+}
+
+/* Hover sur bouton chauffage allumé : même couleur pour éviter changement visuel */
+.chauffage-on:hover {
+  background-color: rgb(98, 158, 238);
+  color: white;
+}
+
+/* Boutons de chauffage éteint : fond rouge vif, texte blanc */
+.chauffage-off {
+  background-color: rgb(250, 88, 43);
+  color: white;
+  /* autres styles spécifiques */
+}
+
+/* Hover sur bouton chauffage éteint : même couleur pour constance visuelle */
+.chauffage-off:hover {
+  background-color: rgb(250, 88, 43);
+  color: white;
+}
+
+/* Styles pour les indicateurs Leaflet (carte météo) du matin et après-midi :
+   padding intérieur, fond blanc, bords arrondis et ombre douce */
+.matin.indicator,
+.apres.indicator {
+  padding: 10px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  margin-bottom: 20px;
+}
+
+/* Titre de la carte météo : texte en gras, centré, marge en dessous */
+.map-title {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Carte météo : pleine largeur, hauteur fixe, bords arrondis et ombre portée */
+.carte-meteo {
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* Boutons ventilation : padding confortable, pas de bordure,
+  coins arrondis, marge à droite pour espacer, fond gris clair,
+  transition douce des couleurs, curseur pointer */
+.vent-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 8px;
+  background-color: #f0f0f0;
+  transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+/* Bouton ventilation ouvert : fond vert vif, texte blanc */
+.vent-btn.ouvert {
+  background-color: #4CAF50; /* Vert */
+  color: white;
+}
+
+/* Bouton ventilation fermé : fond rouge vif, texte blanc */
+.vent-btn.ferme {
+  background-color: #f44336; /* Rouge */
+  color: white;
+}
+
+.box-ia {
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  color: #2d442d;
+}
+.box-ia h2 {
+  font-size: 1.2em;
+  margin-top: 1em;
+  color: #225c22;
+}
+.box-ia ul {
+  padding-left: 1.2em;
+  margin-top: 0.5em;
+}
+.box-ia li {
+  margin-bottom: 0.3em;
+}
