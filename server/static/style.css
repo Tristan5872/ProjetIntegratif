@@ -5,7 +5,6 @@ body {
   padding: 0;
   background-color: #f2f7f1;
   color: #2e3b2c;
-  overflow: hidden; /* pour éviter le scroll global */
 }
 
 /* En-tête principal avec image de fond, couleurs, disposition flex et ombre */

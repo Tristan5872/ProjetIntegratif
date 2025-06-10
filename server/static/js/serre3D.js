@@ -67,6 +67,12 @@ function initSerre3D() {
 
 }
 
+const container3D = document.getElementById('serre-3d-container');
+
+container3D.addEventListener('wheel', function(event) {
+  event.preventDefault(); // bloque le scroll de la page quand on est sur la 3D
+}, { passive: false });
+
 function createSerre() {
   serreGroup = new THREE.Group();
 
