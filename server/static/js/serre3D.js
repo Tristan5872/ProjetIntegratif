@@ -61,6 +61,10 @@ function initSerre3D() {
 
   // Observer les changements d'état des équipements
   observerEquipements();
+
+  serreCamera.position.set(12, 8, 12); // bonne distance
+  serreCamera.lookAt(0, 0, 0); // viser le centre de la serre
+
 }
 
 function createSerre() {
